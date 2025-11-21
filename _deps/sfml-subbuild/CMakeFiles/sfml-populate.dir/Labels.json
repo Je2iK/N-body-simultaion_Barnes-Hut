@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/CMakeFiles/sfml-populate"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/CMakeFiles/sfml-populate.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/CMakeFiles/sfml-populate-complete.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-build.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-configure.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-download.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-install.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-patch.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-test.rule"
+		},
+		{
+			"file" : "/home/osnsab/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/N-body-simultaion_Barnes-Hut/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sfml-populate"
+		],
+		"name" : "sfml-populate"
+	}
+}
