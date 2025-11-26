@@ -1,0 +1,312 @@
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 19 2025 18:00:30
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.3
+Integration steps: 100
+Total duration: 14097 ms
+Average time per step: 140.970 ms
+Equivalent FPS: 7.094
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 19 2025 18:03:10
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 6199 ms
+Average time per step: 61.990 ms
+Equivalent FPS: 16.132
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 19 2025 18:03:10
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 6345 ms
+Average time per step: 63.450 ms
+Equivalent FPS: 15.760
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 19 2025 18:03:58
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 6468 ms
+Average time per step: 64.680 ms
+Equivalent FPS: 15.461
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:06:36
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 1669 ms
+Average time per step: 16.690 ms
+Equivalent FPS: 59.916
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:06:36
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 1668 ms
+Average time per step: 16.680 ms
+Equivalent FPS: 59.952
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:06:36
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 1670 ms
+Average time per step: 16.700 ms
+Equivalent FPS: 59.880
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:08:06
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 1000
+Total duration: 16772 ms
+Average time per step: 16.772 ms
+Equivalent FPS: 59.623
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:08:06
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 1000
+Total duration: 16796 ms
+Average time per step: 16.796 ms
+Equivalent FPS: 59.538
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:08:06
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 1000
+Total duration: 16759 ms
+Average time per step: 16.759 ms
+Equivalent FPS: 59.669
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 19 2025 18:08:06
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 1000
+Total duration: 16791 ms
+Average time per step: 16.791 ms
+Equivalent FPS: 59.556
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 09:57:32
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 3000
+Total duration: 50364 ms
+Average time per step: 16.788 ms
+Equivalent FPS: 59.566
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 09:58:54
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 3000
+Total duration: 50379 ms
+Average time per step: 16.793 ms
+Equivalent FPS: 59.549
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 10:02:14
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.4
+Integration steps: 3000
+Total duration: 50990 ms
+Average time per step: 16.997 ms
+Equivalent FPS: 58.835
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 10:06:32
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.4
+Integration steps: 3000
+Total duration: 50725 ms
+Average time per step: 16.908 ms
+Equivalent FPS: 59.142
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 10:07:54
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.4
+Integration steps: 3000
+Total duration: 51451 ms
+Average time per step: 17.150 ms
+Equivalent FPS: 58.308
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 10:07:54
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.4
+Integration steps: 3000
+Total duration: 51185 ms
+Average time per step: 17.062 ms
+Equivalent FPS: 58.611
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 10:07:54
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.4
+Integration steps: 3000
+Total duration: 51034 ms
+Average time per step: 17.011 ms
+Equivalent FPS: 58.784
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 12:23:05
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 0.4
+Integration steps: 100
+Total duration: 14203 ms
+Average time per step: 142.030 ms
+Equivalent FPS: 7.041
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 12:28:31
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 8156 ms
+Average time per step: 81.560 ms
+Equivalent FPS: 12.261
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 12:28:53
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 5496 ms
+Average time per step: 54.960 ms
+Equivalent FPS: 18.195
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 12:29:13
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 2390 ms
+Average time per step: 23.900 ms
+Equivalent FPS: 41.841
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 12:29:13
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 2477 ms
+Average time per step: 24.770 ms
+Equivalent FPS: 40.371
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 12:37:30
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 1670 ms
+Average time per step: 16.700 ms
+Equivalent FPS: 59.880
+------------------------------------------
+--- Benchmark Barnes-Hut (1001 частиц) ---
+Date: Nov 21 2025 12:37:42
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 1663 ms
+Average time per step: 16.630 ms
+Equivalent FPS: 60.132
+------------------------------------------
+--- Benchmark Barnes-Hut (100001 частиц) ---
+Date: Nov 21 2025 12:37:53
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 100
+Total duration: 7902 ms
+Average time per step: 79.020 ms
+Equivalent FPS: 12.655
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 13:19:26
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 10000
+Total duration: 487883 ms
+Average time per step: 48.788 ms
+Equivalent FPS: 20.497
+------------------------------------------
+--- Benchmark Barnes-Hut (100001 частиц) ---
+Date: Nov 21 2025 18:25:38
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 10000
+Total duration: 211777 ms
+Average time per step: 21.178 ms
+Equivalent FPS: 47.219
+------------------------------------------
+--- Benchmark Barnes-Hut (10001 частиц) ---
+Date: Nov 21 2025 18:39:29
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 10000
+Total duration: 167996 ms
+Average time per step: 16.800 ms
+Equivalent FPS: 59.525
+------------------------------------------
+--- Benchmark Barnes-Hut (100001 частиц) ---
+Date: Nov 21 2025 18:56:32
+Threads used: 16
+Complexity: O(N log N)
+Theta (Accuracy): 1
+Integration steps: 10000
+Total duration: 215280 ms
+Average time per step: 21.528 ms
+Equivalent FPS: 46.451
+------------------------------------------
+--- Benchmark: Barnes-Hut ---
+Date: 2025-11-26 13:25:11
+Algorithm: Barnes-Hut
+Complexity: O(N log N)
+Particles: 5001
+Threads: 16
+Steps: 1000
+Total duration: 11215 ms
+Avg time per step: 11.215 ms
+Equivalent FPS: 89.166
+----------------------------------------
+

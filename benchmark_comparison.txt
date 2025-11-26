@@ -1,0 +1,60 @@
+--- Benchmark: Barnes-Hut ---
+Date: 2025-11-26 14:14:17
+Algorithm: Barnes-Hut
+Complexity: O(N log N)
+Particles: 5001
+Threads: 16
+Steps: 1000
+Total duration: 16726 ms
+Avg time per step: 16.726 ms
+Equivalent FPS: 59.787
+----------------------------------------
+
+--- Benchmark: Brute Force (N²) ---
+Date: 2025-11-26 14:14:42
+Algorithm: Brute Force (N²)
+Complexity: O(N²)
+Particles: 5001
+Threads: 16
+Steps: 1000
+Total duration: 24709 ms
+Avg time per step: 24.709 ms
+Equivalent FPS: 40.471
+----------------------------------------
+
+
+=== COMPARISON ===
+Barnes-Hut vs Brute Force (N²)
+Speedup: 1.47728x
+==================
+
+--- Benchmark: Barnes-Hut ---
+Date: 2025-11-26 14:18:30
+Algorithm: Barnes-Hut
+Complexity: O(N log N)
+Particles: 5001
+Threads: 16
+Steps: 1000
+Total duration: 16877 ms
+Avg time per step: 16.877 ms
+Equivalent FPS: 59.252
+----------------------------------------
+
+--- Benchmark: Brute Force (N²) ---
+Date: 2025-11-26 14:18:55
+Algorithm: Brute Force (N²)
+Complexity: O(N²)
+Particles: 5001
+Threads: 16
+Steps: 1000
+Total duration: 24654 ms
+Avg time per step: 24.654 ms
+Equivalent FPS: 40.561
+----------------------------------------
+
+
+=== COMPARISON ===
+Barnes-Hut vs Brute Force (N²)
+Speedup: 1.4608x
+==================
+
