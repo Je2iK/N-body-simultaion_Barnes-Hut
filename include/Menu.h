@@ -6,24 +6,74 @@
 #include <string>
 #include <functional>
 
+using namespace std;
+using namespace sf;
+
 class Menu {
 public:
     Menu(float width, float height);
     
-    // Возвращает выбранный пункт меню (или -1 если выход)
+    // Returns selected menu item (or 0 if exit)
     int run();
+    
+    // Returns selected particle count (100, 500, 1000, 2500, 5000)
+    int selectParticleCount();
+    
+    // Returns selected theta value (0.1 - 2.0)
+    double selectTheta();
+    
+    // Auth methods
+    bool showLoginScreen();
+    bool showRegisterScreen();
 
 private:
-    void draw(sf::RenderWindow& window);
-    void handleInput(sf::RenderWindow& window);
+    void draw(RenderWindow& window);
+    void handleInput(RenderWindow& window);
     
     struct Button {
-        sf::RectangleShape shape;
-        sf::Text text;
+        RectangleShape shape;
+        Text text;
         int id;
-        float currentScale = 1.0f;     // Для анимации масштаба
+        float currentScale = 1.0f;
         float targetScale = 1.0f;
-        float alpha = 150.0f;          // Прозрачность фона
+        float alpha = 150.0f;
+        string locKey;
+
+        Button(const Font& font) : text(font) {}
+    };
+    
+    struct InputBox {
+        RectangleShape shape;
+        Text text;
+        Text label;
+        string value;
+        bool isActive = false;
+        bool isPassword = false;
+
+        InputBox(const Font& font) : text(font), label(font) {}
+        
+        void handleInput(const Event& event) {
+            if (!isActive) return;
+            
+            if (const auto* textEvent = event.getIf<Event::TextEntered>()) {
+                if (textEvent->unicode == 8) { // Backspace
+                    if (!value.empty()) value.pop_back();
+                } else if (textEvent->unicode < 128 && textEvent->unicode > 31) {
+                    if (value.length() < 20) {
+                        value += static_cast<char>(textEvent->unicode);
+                    }
+                }
+            }
+        }
+        
+        void updateDisplay() {
+            if (isPassword) {
+                string masked(value.length(), '*');
+                text.setString(masked + (isActive ? "|" : ""));
+            } else {
+                text.setString(value + (isActive ? "|" : ""));
+            }
+        }
     };
     
     struct BackgroundStar {
@@ -35,13 +85,15 @@ private:
     
     float width;
     float height;
-    sf::Font font;
-    std::vector<Button> buttons;
-    std::vector<BackgroundStar> stars; // Фоновые звезды
+    Font font;
+    vector<Button> buttons;
+    vector<BackgroundStar> stars;
+    string current_username;  // Store logged in username
     
-    void addButton(const std::string& text, int id, float y);
-    void updateBackground();           // Обновление звезд
-    void drawBackground(sf::RenderWindow& window);
+    void addButton(const string& text, int id, float x, float y, float width, float height);
+    void updateBackground();
+    void drawBackground(RenderWindow& window);
+    void showAdminPanel();
 };
 
 #endif // MENU_H

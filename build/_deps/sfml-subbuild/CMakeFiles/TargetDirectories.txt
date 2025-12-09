@@ -1,0 +1,3 @@
+/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/sfml-subbuild/CMakeFiles/sfml-populate.dir
+/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/sfml-subbuild/CMakeFiles/edit_cache.dir
+/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/sfml-subbuild/CMakeFiles/rebuild_cache.dir

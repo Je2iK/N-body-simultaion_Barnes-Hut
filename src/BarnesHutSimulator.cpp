@@ -4,23 +4,54 @@
 #include <thread>
 #include <algorithm>
 
+using namespace std;
+using namespace sf;
+
 using namespace Physics;
 using namespace BarnesHut;
 using namespace Simulation;
 
-BarnesHutSimulator::BarnesHutSimulator(double width, double height)
-    : area_width(width), area_height(height), show_tree(false), tree_built(false)
+BarnesHutSimulator::BarnesHutSimulator(double width, double height, double theta_param)
+    : area_width(width), area_height(height), show_tree(false), tree_built(false), 
+      theta(theta_param), min_cell_size(BarnesHut::MIN_CELL_SIZE)
 {
-    resetTree();
+    resetTree(width/2, height/2, width, height);
 }
 
-void BarnesHutSimulator::resetTree() {
-    root = std::make_unique<Cell>(area_width/2, area_height/2, area_width, area_height);
+void BarnesHutSimulator::resetTree(double x, double y, double w, double h) {
+    root = make_unique<Cell>(x, y, w, h);
     tree_built = false;
 }
 
-void BarnesHutSimulator::buildTree(const std::vector<Star>& stars) {
-    resetTree();
+void BarnesHutSimulator::buildTree(const vector<Star>& stars) {
+    if (stars.empty()) return;
+
+    double min_x = stars[0].x;
+    double max_x = stars[0].x;
+    double min_y = stars[0].y;
+    double max_y = stars[0].y;
+
+    for (const auto& star : stars) {
+        if (star.x < min_x) min_x = star.x;
+        if (star.x > max_x) max_x = star.x;
+        if (star.y < min_y) min_y = star.y;
+        if (star.y > max_y) max_y = star.y;
+    }
+
+    double padding = 100.0;
+    min_x -= padding;
+    max_x += padding;
+    min_y -= padding;
+    max_y += padding;
+
+    double width = max_x - min_x;
+    double height = max_y - min_y;
+    double size = max(width, height);
+    double center_x = (min_x + max_x) / 2.0;
+    double center_y = (min_y + max_y) / 2.0;
+
+    resetTree(center_x, center_y, size, size);
+
     for (const auto& star : stars) {
         insert(&star);
     }
@@ -77,7 +108,7 @@ int BarnesHutSimulator::getQuadrant(const Star* star, const Cell* cell) const {
 }
 
 void BarnesHutSimulator::subdivide(Cell* cell) {
-    if (cell->width < MIN_CELL_SIZE || cell->height < MIN_CELL_SIZE) {
+    if (cell->width < min_cell_size || cell->height < min_cell_size) {
         return;
     }
     
@@ -86,18 +117,18 @@ void BarnesHutSimulator::subdivide(Cell* cell) {
     const double quarter_width = half_width / 2;
     const double quarter_height = half_height / 2;
     
-    cell->children.push_back(std::make_unique<Cell>(
+    cell->children.push_back(make_unique<Cell>(
         cell->x - quarter_width, cell->y - quarter_height, half_width, half_height));
-    cell->children.push_back(std::make_unique<Cell>(
+    cell->children.push_back(make_unique<Cell>(
         cell->x + quarter_width, cell->y - quarter_height, half_width, half_height));
-    cell->children.push_back(std::make_unique<Cell>(
+    cell->children.push_back(make_unique<Cell>(
         cell->x - quarter_width, cell->y + quarter_height, half_width, half_height));
-    cell->children.push_back(std::make_unique<Cell>(
+    cell->children.push_back(make_unique<Cell>(
         cell->x + quarter_width, cell->y + quarter_height, half_width, half_height));
     
     cell->is_divided = true;
     
-    auto old_stars = std::move(cell->stars);
+    auto old_stars = move(cell->stars);
     cell->stars.clear();
     
     for (auto* star : old_stars) {
@@ -142,16 +173,16 @@ void BarnesHutSimulator::insert(const Star* star) {
     }
 }
 
-std::pair<double, double> BarnesHutSimulator::calculateTreeAccelerationRecursive(
+pair<double, double> BarnesHutSimulator::calculateTreeAccelerationRecursive(
     const Star* star, const Cell* cell) const {
     if (cell == nullptr || cell->mass == 0.0) return {0, 0};
     
     const double dx_com = cell->com_x - star->x;
     const double dy_com = cell->com_y - star->y;
     const double distance_sq_com = dx_com*dx_com + dy_com*dy_com + EPSILON_SQ;
-    const double distance_com = std::sqrt(distance_sq_com);
+    const double distance_com = sqrt(distance_sq_com);
 
-    if (!cell->is_divided || (cell->width / distance_com) < THETA) {
+    if (!cell->is_divided || (cell->width / distance_com) < theta) {
         if (cell->stars.size() == 1 && cell->stars[0] == star) {
             return {0, 0};
         }
@@ -174,9 +205,9 @@ std::pair<double, double> BarnesHutSimulator::calculateTreeAccelerationRecursive
 }
 
 void BarnesHutSimulator::calculateAccelerationsParallel(
-    const std::vector<Star>& stars,
-    std::vector<double>& acc_x,
-    std::vector<double>& acc_y) const {
+    const vector<Star>& stars,
+    vector<double>& acc_x,
+    vector<double>& acc_y) const {
     if (!tree_built) return;
     
     const size_t start_index = 0;
@@ -185,11 +216,11 @@ void BarnesHutSimulator::calculateAccelerationsParallel(
     if (num_particles == 0) return;
     
     const size_t chunk_size = (num_particles + NUM_THREADS - 1) / NUM_THREADS;
-    std::vector<std::thread> threads;
+    vector<thread> threads;
     
     for (int i = 0; i < NUM_THREADS; ++i) {
         const size_t start = start_index + i * chunk_size;
-        const size_t end = std::min(start + chunk_size, stars.size());
+        const size_t end = min(start + chunk_size, stars.size());
         
         if (start < end) {
             threads.emplace_back([&, start, end]() {
@@ -208,30 +239,29 @@ void BarnesHutSimulator::calculateAccelerationsParallel(
     }
 }
 
-void BarnesHutSimulator::timeStep(std::vector<Star>& stars) {
-    std::vector<double> acc_x(stars.size(), 0.0);
-    std::vector<double> acc_y(stars.size(), 0.0);
+void BarnesHutSimulator::timeStep(vector<Star>& stars) {
+    vector<double> acc_x(stars.size(), 0.0);
+    vector<double> acc_y(stars.size(), 0.0);
     
-    // Шаг 1: Расчет ускорений a(t) в текущих позициях
+    // КРИТИЧЕСКИ ВАЖНО: Сначала вычисляем ускорения в текущей позиции!
     buildTree(stars);
     calculateAccelerationsParallel(stars, acc_x, acc_y);
-
-    const size_t start_index = 0;  // Обновляем ВСЕ частицы, включая черную дыру
+    
+    // Позиции и скорости
+    const size_t start_index = 0;
     const size_t num_particles = stars.size();
 
     if (num_particles == 0) return;
     
     const size_t chunk_size = (num_particles + NUM_THREADS - 1) / NUM_THREADS;
-    std::vector<std::thread> update_threads;
+    vector<thread> update_threads;
     
-    // Шаг 2: Обновление позиций x(t+dt) = x(t) + v(t)*dt + 0.5*a(t)*dt^2
-    // и промежуточных скоростей v_temp = v(t) + 0.5*a(t)*dt
-    std::vector<double> vx_temp(stars.size());
-    std::vector<double> vy_temp(stars.size());
+    vector<double> vx_temp(stars.size());
+    vector<double> vy_temp(stars.size());
     
     for (int i = 0; i < NUM_THREADS; ++i) {
         const size_t start = start_index + i * chunk_size;
-        const size_t end = std::min(start + chunk_size, stars.size());
+        const size_t end = min(start + chunk_size, stars.size());
         
         if (start < end) {
             update_threads.emplace_back([&, start, end]() {
@@ -239,11 +269,9 @@ void BarnesHutSimulator::timeStep(std::vector<Star>& stars) {
                     const double ax = acc_x[j];
                     const double ay = acc_y[j];
                     
-                    // Velocity Verlet: x(t+dt) = x(t) + v(t)*dt + 0.5*a(t)*dt^2
                     stars[j].x += stars[j].vx * DT + 0.5 * ax * DT * DT;
                     stars[j].y += stars[j].vy * DT + 0.5 * ay * DT * DT;
                     
-                    // Сохраняем v(t) + 0.5*a(t)*dt для следующего шага
                     vx_temp[j] = stars[j].vx + 0.5 * ax * DT;
                     vy_temp[j] = stars[j].vy + 0.5 * ay * DT;
                 }
@@ -256,16 +284,12 @@ void BarnesHutSimulator::timeStep(std::vector<Star>& stars) {
     }
     update_threads.clear();
 
-    // Шаг 3: Пересчет ускорений a(t+dt) в новых позициях
     buildTree(stars);
     calculateAccelerationsParallel(stars, acc_x, acc_y);
 
-    // Шаг 4: Завершение обновления скоростей
-    // v(t+dt) = v(t) + 0.5*(a(t) + a(t+dt))*dt
-    // = [v(t) + 0.5*a(t)*dt] + 0.5*a(t+dt)*dt
     for (int i = 0; i < NUM_THREADS; ++i) {
         const size_t start = start_index + i * chunk_size;
-        const size_t end = std::min(start + chunk_size, stars.size());
+        const size_t end = min(start + chunk_size, stars.size());
         
         if (start < end) {
             update_threads.emplace_back([&, start, end]() {
@@ -273,7 +297,6 @@ void BarnesHutSimulator::timeStep(std::vector<Star>& stars) {
                     const double ax_new = acc_x[j];
                     const double ay_new = acc_y[j];
                     
-                    // Velocity Verlet: v(t+dt) = v_temp + 0.5*a(t+dt)*dt
                     stars[j].vx = vx_temp[j] + 0.5 * ax_new * DT;
                     stars[j].vy = vy_temp[j] + 0.5 * ay_new * DT;
                 }
@@ -286,7 +309,7 @@ void BarnesHutSimulator::timeStep(std::vector<Star>& stars) {
     }
 }
 
-void BarnesHutSimulator::draw(sf::RenderWindow& window, float scale) const {
+void BarnesHutSimulator::draw(RenderWindow& window, float scale) const {
     if (show_tree && tree_built) {
         root->draw(window, scale);
     }

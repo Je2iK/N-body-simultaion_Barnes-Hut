@@ -7,6 +7,9 @@
 #include <random>
 #include <SFML/Graphics.hpp>
 
+using namespace std;
+using namespace sf;
+
 // Быстрая обратная величина квадратного корня
 inline double fast_inv_sqrt(double x) {
     double y = x;
@@ -18,14 +21,17 @@ inline double fast_inv_sqrt(double x) {
 }
 
 // Создание одной галактики
-std::vector<Star> createGalaxy(double galaxy_radius, double center_x, double center_y, 
+vector<Star> createGalaxy(int num_stars, double galaxy_radius, double center_x, double center_y, 
                                double acceleration_factor = 0.99,
                                double galaxy_vx = 0.0, double galaxy_vy = 0.0);
 
 // Создание столкновения двух галактик
-std::vector<Star> createGalaxyCollision(double galaxy_radius, double area_width, double area_height);
+vector<Star> createGalaxyCollision(int num_stars, double galaxy_radius, double area_width, double area_height);
 
 // Отрисовка звезд
-void drawStars(sf::RenderWindow& window, const std::vector<Star>& stars, float scale);
+void drawStars(RenderWindow& window, const vector<Star>& stars, float scale, bool showTrails = false);
+
+// Загрузка шрифта (кроссплатформенная)
+bool loadFont(Font& font);
 
 #endif // UTILS_H

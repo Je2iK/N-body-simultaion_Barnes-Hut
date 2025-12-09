@@ -15,8 +15,8 @@ void Cell::draw(sf::RenderWindow& window, float scale) const {
     
     sf::RectangleShape rect(sf::Vector2f(static_cast<float>(width * scale),
                                         static_cast<float>(height * scale)));
-    rect.setPosition(static_cast<float>((x - width/2) * scale),
-                    static_cast<float>((y - height/2) * scale));
+    rect.setPosition({static_cast<float>((x - width/2) * scale),
+                     static_cast<float>((y - height/2) * scale)});
     rect.setFillColor(sf::Color::Transparent);
     rect.setOutlineColor(Visual::TREE_COLOR);
     rect.setOutlineThickness(0.3f);

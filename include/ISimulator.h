@@ -6,25 +6,28 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
+using namespace std;
+using namespace sf;
+
 // Интерфейс для симуляторов
 class ISimulator {
 public:
     virtual ~ISimulator() = default;
     
     // Выполнить один шаг симуляции
-    virtual void timeStep(std::vector<Star>& stars) = 0;
+    virtual void timeStep(vector<Star>& stars) = 0;
     
     // Отрисовка дополнительных элементов (например, дерева)
-    virtual void draw(sf::RenderWindow& window, float scale) const {}
+    virtual void draw(RenderWindow& window, float scale) const {}
     
     // Переключение визуализации
     virtual void toggleVisualization() {}
     
     // Получить имя алгоритма
-    virtual std::string getName() const = 0;
+    virtual string getName() const = 0;
     
     // Получить сложность алгоритма
-    virtual std::string getComplexity() const = 0;
+    virtual string getComplexity() const = 0;
 };
 
 #endif // ISIMULATOR_H

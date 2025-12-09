@@ -1,55 +1,43 @@
-# Compiler and flags
-CXX = g++
-CXXFLAGS = -std=c++17 -O3 -march=native -Wall -Wextra -pthread
-INCLUDES = -Iinclude
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lpthread
+.PHONY: up down build run clean help
 
-# Directories
-SRC_DIR = src
-INC_DIR = include
-BUILD_DIR = build
-BIN_DIR = bin
+# Цвета для вывода
+GREEN := \033[0;32m
+YELLOW := \033[1;33m
+RED := \033[0;31m
+NC := \033[0m # No Color
 
-# Source files
-SOURCES = $(SRC_DIR)/main.cpp \
-          $(SRC_DIR)/Utils.cpp \
-          $(SRC_DIR)/Cell.cpp \
-          $(SRC_DIR)/BarnesHutSimulator.cpp \
-          $(SRC_DIR)/BruteForceSimulator.cpp \
-          $(SRC_DIR)/Menu.cpp \
-          $(SRC_DIR)/Benchmark.cpp
+help: ## Показать эту справку
+	@echo "$(GREEN)N-Body Simulation - Доступные команды:$(NC)"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-15s$(NC) %s\n", $$1, $$2}'
+	@echo ""
 
-# Object files
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+up: 
+	@xhost +local:docker > /dev/null 2>&1 || true
+	@sudo docker compose up --abort-on-container-exit
 
-# Target executable
-TARGET = $(BIN_DIR)/nbody_simulation
+down:@sudo docker compose down
+	@xhost -local:docker > /dev/null 2>&1 || true
+	
+build: ## Пересобрать образы
+	@sudo docker compose build
 
-# Default target
-all: directories $(TARGET)
+run: up ## Алиас для up
 
-# Create necessary directories
-directories:
-	@mkdir -p $(BUILD_DIR)
-	@mkdir -p $(BIN_DIR)
+clean: ## Полная очистка (удалить volumes и образы)
+	@echo "ВНИМАНИЕ: Это удалит все данные БД!$(NC)"
+	@read -p "Продолжить? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(YELLOW)🧹 Очистка...$(NC)"; \
+		sudo docker compose down -v; \
+		sudo docker system prune -f; \
+		echo "$(GREEN)✓ Готово!$(NC)"; \
+	else \
+		echo "$(YELLOW)Отменено$(NC)"; \
+	fi
 
-# Link
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(TARGET) $(LIBS)
-	@echo "✅ Build complete: $(TARGET)"
+logs: ## Показать логи
+	@sudo docker compose logs -f
 
-# Compile
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-# Clean
-clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR)
-	@echo "🧹 Cleaned build artifacts"
-
-# Run
-run: all
-	./$(TARGET)
-
-# Phony targets
-.PHONY: all clean run directories
+restart: down up ## Перезапустить симуляцию

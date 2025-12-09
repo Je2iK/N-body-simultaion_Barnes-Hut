@@ -6,6 +6,9 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 
+using namespace std;
+using namespace sf;
+
 // Класс для представления клетки в дереве (Quadtree)
 class Cell {
 public:
@@ -14,13 +17,13 @@ public:
     double mass;
     double com_x, com_y;  // Center of mass
     
-    std::vector<Star*> stars;
-    std::vector<std::unique_ptr<Cell>> children;
+    vector<Star*> stars;
+    vector<unique_ptr<Cell>> children;
     bool is_divided;
 
     Cell(double x, double y, double width, double height);
     
-    void draw(sf::RenderWindow& window, float scale) const;
+    void draw(RenderWindow& window, float scale) const;
 };
 
 #endif // CELL_H

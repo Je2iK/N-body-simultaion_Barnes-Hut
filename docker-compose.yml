@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: nbody_postgres
+    environment:
+      POSTGRES_USER: nbody_user
+      POSTGRES_PASSWORD: nbody_password
+      POSTGRES_DB: nbody_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nbody_user -d nbody_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - nbody_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nbody_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - DB_HOST=127.0.0.1
+      - DB_PORT=5433
+      - DB_NAME=nbody_db
+      - DB_USER=nbody_user
+      - DB_PASSWORD=nbody_password
+      - QT_X11_NO_MITSHM=1
+      - XAUTHORITY=/root/.Xauthority
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /home/osnsab/.Xauthority:/root/.Xauthority:rw
+    network_mode: host
+    stdin_open: true
+    tty: true
+    restart: "no"
+
+networks:
+  nbody_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
