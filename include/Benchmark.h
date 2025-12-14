@@ -30,6 +30,9 @@ public:
     // Получить результаты сравнения в виде строки
     static string getComparisonResult(ISimulator* sim1, ISimulator* sim2, 
                                          int num_particles, int num_steps);
+
+    // Сохранить результат в файл
+    static void saveResult(const BenchmarkResult& result, const string& filename = "benchmark_results.txt");
 };
 
 #endif // BENCHMARK_H

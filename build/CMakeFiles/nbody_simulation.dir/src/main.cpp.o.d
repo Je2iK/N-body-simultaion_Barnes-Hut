@@ -343,7 +343,6 @@ CMakeFiles/nbody_simulation.dir/src/main.cpp.o: \
  /usr/include/c++/15/bits/stl_numeric.h \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h \
- /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h \
  /usr/include/c++/15/iostream \
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Menu.h \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h

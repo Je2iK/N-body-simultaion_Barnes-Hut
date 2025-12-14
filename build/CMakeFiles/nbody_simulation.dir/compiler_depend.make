@@ -845,7 +845,6 @@ CMakeFiles/nbody_simulation.dir/src/Benchmark.cpp.o: /home/osnsab/Докумен
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Benchmark.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/ISimulator.h \
-  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h \
   /usr/include/alloca.h \
@@ -2050,7 +2049,6 @@ CMakeFiles/nbody_simulation.dir/src/Menu.cpp.o: /home/osnsab/Документы/
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/AuthManager.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Menu.h \
-  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h \
   /usr/include/alloca.h \
@@ -2937,7 +2935,6 @@ CMakeFiles/nbody_simulation.dir/src/main.cpp.o: /home/osnsab/Документы/
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/ISimulator.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Menu.h \
-  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h \
   /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h \
   /usr/include/alloca.h \
@@ -3555,10 +3552,6 @@ _deps/sfml-src/include/SFML/System/Vector3.hpp:
 /usr/include/c++/15/bits/fs_dir.h:
 
 /usr/include/pqxx/config-public-compiler.h:
-
-/usr/lib/x86_64-linux-gnu/libXfixes.so:
-
-/usr/include/c++/15/bits/locale_facets_nonio.tcc:
 
 _deps/sfml-src/include/SFML/Graphics/Drawable.hpp:
 
@@ -4394,8 +4387,6 @@ _deps/sfml-src/include/SFML/System/String.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/xmmintrin.h:
 
-/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h:
-
 /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/c++io.h:
@@ -4447,3 +4438,7 @@ _deps/sfml-src/include/SFML/Graphics/Shader.hpp:
 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1:
 
 /usr/lib/x86_64-linux-gnu/librt.a:
+
+/usr/include/c++/15/bits/locale_facets_nonio.tcc:
+
+/usr/lib/x86_64-linux-gnu/libXfixes.so:

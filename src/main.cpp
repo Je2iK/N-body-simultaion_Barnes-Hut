@@ -3,7 +3,7 @@
 #include "Benchmark.h"
 #include "Utils.h"
 #include "Constants.h"
-#include "RuStrings.h"
+
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -51,34 +51,34 @@ bool runVisualization(ISimulator* simulator, vector<Star> stars, const string& w
     bool isBruteForce = (simulator->getName().find("Brute Force") != string::npos);
     
     // Кэшируем переведённые строки
-    String algoName = isBruteForce ? ru(Strings::BRUTE_FORCE) : ru(Strings::BARNES_HUT);
-    String particlesStr = ru(Strings::PARTICLES);
-    String fpsStr = ru(Strings::FPS);
-    String thetaStr = ru(Strings::THETA);
-    String cellStr = ru(Strings::CELL);
-    String helpPromptStr = ru(Strings::PRESS_H);
-    String selectedStr = ru(Strings::SELECTED);
-    string massLabel = Strings::MASS;
-    string posLabel = Strings::POSITION;
-    string velLabel = Strings::VELOCITY;
-    String controlsTitle = ru(Strings::CONTROLS);
+    String algoName = isBruteForce ? ru(u8"Полный перебор") : ru(u8"Барнс-Хат");
+    String particlesStr = ru(u8"Частицы");
+    String fpsStr = ru("FPS");
+    String thetaStr = ru(u8"Тета");
+    String cellStr = ru(u8"Ячейка");
+    String helpPromptStr = ru(u8"H - Управление");
+    String selectedStr = ru(u8"ВЫБРАНО");
+    string massLabel = u8"Масса: ";
+    string posLabel = u8"Позиция: ";
+    string velLabel = u8"Скорость: ";
+    String controlsTitle = ru(u8"УПРАВЛЕНИЕ");
     
     stringstream helpSS_pre;
-    helpSS_pre << Strings::HELP_SPACE << "\n";
-    helpSS_pre << Strings::HELP_E << "\n";
-    helpSS_pre << Strings::HELP_R << "\n";
-    helpSS_pre << Strings::HELP_WASD << "\n";
-    helpSS_pre << Strings::HELP_ZOOM << "\n";
-    helpSS_pre << Strings::HELP_CLICK << "\n";
+    helpSS_pre << u8"SPACE       Пауза/Старт" << "\n";
+    helpSS_pre << u8"E           Следы вкл/выкл" << "\n";
+    helpSS_pre << u8"R           Центр на черной дыре" << "\n";
+    helpSS_pre << u8"WASD/Arrows Перемещение" << "\n";
+    helpSS_pre << u8"Колесо мыши Зум" << "\n";
+    helpSS_pre << u8"ЛКМ         Выбрать звезду" << "\n";
     if (!isBruteForce) {
         helpSS_pre << "\n";
-        helpSS_pre << Strings::HELP_T << "\n";
-        helpSS_pre << Strings::HELP_THETA << "\n";
-        helpSS_pre << Strings::HELP_CELL << "\n";
+        helpSS_pre << u8"T           Сетка вкл/выкл" << "\n";
+        helpSS_pre << u8"+/-         Изменить Тета" << "\n";
+        helpSS_pre << u8"[/]         Размер ячейки" << "\n";
     }
     helpSS_pre << "\n";
-    helpSS_pre << Strings::HELP_H << "\n";
-    helpSS_pre << Strings::HELP_ESC;
+    helpSS_pre << u8"H - Показать/Скрыть управление" << "\n";
+    helpSS_pre << u8"ESC - Вернуться в меню";
     string helpStringUtf8 = helpSS_pre.str();
     String helpStringFinal = String::fromUtf8(helpStringUtf8.begin(), helpStringUtf8.end());
     
@@ -436,7 +436,7 @@ bool runVisualization(ISimulator* simulator, vector<Star> stars, const string& w
 }
 
 bool runBenchmarkGUI(ISimulator* sim1, int particleCount, ISimulator* sim2 = nullptr) {
-    RenderWindow window(VideoMode({900, 700}), ru(Strings::BENCHMARK_RESULTS), Style::Titlebar | Style::Close);
+    RenderWindow window(VideoMode({900, 700}), ru(u8"РЕЗУЛЬТАТЫ ТЕСТА"), Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
     
     Font font;
@@ -444,7 +444,7 @@ bool runBenchmarkGUI(ISimulator* sim1, int particleCount, ISimulator* sim2 = nul
         cerr << "Failed to load any font!" << endl;
     }
     
-    string resultStr = Strings::RUNNING_BENCHMARK;
+    string resultStr = u8"Запуск теста...\nПожалуйста, подождите.";
     atomic<bool> isDone{false};
     
     thread benchThread([&]() {
@@ -457,18 +457,19 @@ bool runBenchmarkGUI(ISimulator* sim1, int particleCount, ISimulator* sim2 = nul
             auto res = Benchmark::run(sim1, stars, Simulation::NUM_STEPS_BENCHMARK);
             
             bool isBrute = (sim1->getName().find("Brute") != string::npos);
-            string algoRu = isBrute ? Strings::BRUTE_FORCE : Strings::BARNES_HUT;
+            string algoRu = isBrute ? u8"Полный перебор" : u8"Барнс-Хат";
             
             stringstream ss;
-            ss << Strings::BENCHMARK_RESULTS << "\n\n";
-            ss << Strings::ALGORITHM << algoRu << "\n";
-            ss << Strings::PARTICLES_LABEL << res.num_particles << "\n";
-            ss << Strings::STEPS << res.num_steps << "\n";
-            ss << Strings::TIME << res.total_duration_ms << " ms\n";
-            ss << Strings::FPS_LABEL << fixed << setprecision(1) << res.fps_equivalent << "\n";
+            ss << u8"РЕЗУЛЬТАТЫ ТЕСТА" << "\n\n";
+            ss << u8"Алгоритм: " << algoRu << "\n";
+            ss << u8"Частицы: " << res.num_particles << "\n";
+            ss << u8"Шаги: " << res.num_steps << "\n";
+            ss << u8"Время: " << res.total_duration_ms << " ms\n";
+            ss << "FPS: " << fixed << setprecision(1) << res.fps_equivalent << "\n";
             resultStr = ss.str();
+            Benchmark::saveResult(res);
         }
-        resultStr += Strings::PRESS_SPACE_ESC;
+        resultStr += u8"\n\nНажмите SPACE или ESC для возврата.";
         isDone = true;
     });
     
@@ -492,7 +493,7 @@ bool runBenchmarkGUI(ISimulator* sim1, int particleCount, ISimulator* sim2 = nul
         
         Text title(font);
         title.setFont(font);
-        title.setString(ru(Strings::BENCHMARK));
+        title.setString(ru(u8"БЕНЧМАРК"));
         title.setCharacterSize(42);
         title.setFillColor(Color::White);
         title.setStyle(Text::Bold);
@@ -546,7 +547,7 @@ bool runBenchmarkGUI(ISimulator* sim1, int particleCount, ISimulator* sim2 = nul
             
             Text loadingText(font);
             loadingText.setFont(font);
-            loadingText.setString(ru(Strings::PROCESSING));
+            loadingText.setString(ru(u8"Обработка..."));
             loadingText.setCharacterSize(20);
             loadingText.setFillColor(Color(179, 179, 179));
             FloatRect loadBounds = loadingText.getLocalBounds();

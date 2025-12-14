@@ -4,11 +4,18 @@
 #include "Star.h"
 #include "Constants.h"
 #include <vector>
+#include <string>
 #include <random>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 
 using namespace std;
 using namespace sf;
+
+// Хелпер для создания String из UTF-8 строки
+inline sf::String ru(const std::string& s) {
+    return sf::String::fromUtf8(s.begin(), s.end());
+}
 
 // Быстрая обратная величина квадратного корня
 inline double fast_inv_sqrt(double x) {

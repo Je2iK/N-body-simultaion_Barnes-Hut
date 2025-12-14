@@ -848,7 +848,6 @@ CMakeFiles/nbody_simulation.dir/src/Benchmark.cpp.o
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Benchmark.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/ISimulator.h
- /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h
  /usr/include/alloca.h
@@ -2056,7 +2055,6 @@ CMakeFiles/nbody_simulation.dir/src/Menu.cpp.o
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/AuthManager.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Menu.h
- /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h
  /usr/include/alloca.h
@@ -2945,7 +2943,6 @@ CMakeFiles/nbody_simulation.dir/src/main.cpp.o
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Constants.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/ISimulator.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Menu.h
- /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h
  /usr/include/alloca.h

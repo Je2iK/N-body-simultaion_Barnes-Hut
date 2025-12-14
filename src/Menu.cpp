@@ -1,5 +1,5 @@
 #include "Menu.h"
-#include "RuStrings.h"
+
 #include "Utils.h"
 #ifdef ENABLE_AUTH
 #include "AuthManager.h"
@@ -20,13 +20,13 @@ float lerp(float a, float b, float t) {
 
 // Хелпер для получения русского текста кнопок
 string getButtonText(const string& key) {
-    if (key == "BarnesHutSimulation") return Strings::BARNES_HUT_SIM;
-    if (key == "BruteForceSimulation") return Strings::BRUTE_FORCE_SIM;
-    if (key == "GalaxyCollision") return Strings::GALAXY_COLLISION;
-    if (key == "BenchmarkBarnesHut") return Strings::BENCH_BARNES_HUT;
-    if (key == "BenchmarkBruteForce") return Strings::BENCH_BRUTE_FORCE;
-    if (key == "CompareAlgorithms") return Strings::COMPARE_ALGOS;
-    if (key == "EXIT") return Strings::EXIT;
+    if (key == "BarnesHutSimulation") return u8"Симуляция\nБарнс-Хат";
+    if (key == "BruteForceSimulation") return u8"Симуляция\nПеребор";
+    if (key == "GalaxyCollision") return u8"Столкновение\nГалактик";
+    if (key == "BenchmarkBarnesHut") return u8"Тест алгоритма\nБарнс-Хата";
+    if (key == "BenchmarkBruteForce") return u8"Тест алгоритма\nперебора";
+    if (key == "CompareAlgorithms") return u8"Сравнить\nАлгоритмы";
+    if (key == "EXIT") return u8"ВЫХОД";
     return key;
 }
 
@@ -137,6 +137,7 @@ int Menu::run() {
     // Profile modal states
     enum class ProfileState { None, EditUsername, ChangePassword, ConfirmDelete };
     ProfileState profileState = ProfileState::None;
+    bool enteringOldPass = false;
     
     InputBox profileInput(font);
     profileInput.shape.setSize({300, 40});
@@ -151,7 +152,7 @@ int Menu::run() {
     saveProfileBtn.shape.setSize({140, 40});
     saveProfileBtn.shape.setPosition({width/2 - 150, height/2 + 40});
     saveProfileBtn.shape.setFillColor(Color(30, 215, 96));
-    saveProfileBtn.text.setString(ru(Strings::SAVE));
+    saveProfileBtn.text.setString(ru(u8"СОХРАНИТЬ"));
     saveProfileBtn.text.setCharacterSize(14);
     saveProfileBtn.text.setFillColor(Color::Black);
     FloatRect saveRect = saveProfileBtn.text.getLocalBounds();
@@ -162,7 +163,7 @@ int Menu::run() {
     cancelProfileBtn.shape.setSize({140, 40});
     cancelProfileBtn.shape.setPosition({width/2 + 10, height/2 + 40});
     cancelProfileBtn.shape.setFillColor(Color(200, 50, 50));
-    cancelProfileBtn.text.setString(ru(Strings::CANCEL));
+    cancelProfileBtn.text.setString(ru(u8"ОТМЕНА"));
     cancelProfileBtn.text.setCharacterSize(14);
     cancelProfileBtn.text.setFillColor(Color::White);
     FloatRect cancelRect = cancelProfileBtn.text.getLocalBounds();
@@ -180,21 +181,21 @@ int Menu::run() {
 #endif
 
     // Кэшируем русские строки
-    String titleStr = ru(Strings::TITLE);
-    String subtitleStr = ru(Strings::SUBTITLE);
-    String taglineStr = ru(Strings::TAGLINE);
-    String simLabelStr = ru(Strings::SIMULATIONS);
-    String benchLabelStr = ru(Strings::BENCHMARKS);
-    String accountStr = ru(Strings::ACCOUNT);
-    String changeUserStr = ru(Strings::CHANGE_USERNAME);
-    String changePassStr = ru(Strings::CHANGE_PASSWORD);
-    String logoutStr = ru(Strings::LOGOUT);
-    String deleteAccStr = ru(Strings::DELETE_ACCOUNT);
-    String adminPanelStr = ru(Strings::ADMIN_PANEL);
-    String confirmStr = ru(Strings::CONFIRM);
-    String saveStr = ru(Strings::SAVE);
-    String newUsernameStr = ru(Strings::NEW_USERNAME);
-    String newPasswordStr = ru(Strings::NEW_PASSWORD);
+    String titleStr = ru("N-BODY");
+    String subtitleStr = ru(u8"СИМУЛЯЦИЯ");
+    String taglineStr = ru(u8"Алгоритм Барнса-Хата / Производительность O(N log N)");
+    String simLabelStr = ru(u8"СИМУЛЯЦИИ");
+    String benchLabelStr = ru(u8"БЕНЧМАРКИ");
+    String accountStr = ru(u8"АККАУНТ");
+    String changeUserStr = ru(u8"Сменить имя");
+    String changePassStr = ru(u8"Сменить пароль");
+    String logoutStr = ru(u8"Выйти");
+    String deleteAccStr = ru(u8"Удалить аккаунт");
+    String adminPanelStr = ru(u8"Админ панель");
+    String confirmStr = ru(u8"ПОДТВЕРДИТЬ");
+    String saveStr = ru(u8"СОХРАНИТЬ");
+    String newUsernameStr = ru(u8"Новое имя");
+    String newPasswordStr = ru(u8"Новый пароль");
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -227,8 +228,25 @@ int Menu::run() {
                                 }
                             } else if (profileState == ProfileState::ChangePassword) {
                                 if (!profileInput.value.empty()) {
-                                    if (auth.updatePassword(currentUserId, profileInput.value)) {
-                                        success = true;
+                                    if (!enteringOldPass) {
+                                        // Step 1: Verify old password
+                                        if (auth.loginUser(current_username, profileInput.value)) {
+                                            enteringOldPass = true;
+                                            profileInput.value = "";
+                                            profileInput.label.setString(newPasswordStr);
+                                            saveProfileBtn.text.setString(saveStr);
+                                            // Don't close modal yet
+                                            continue;
+                                        } else {
+                                            // Show error (visual feedback could be improved)
+                                            profileInput.value = "";
+                                            // Ideally show an error message, but for now just clear
+                                        }
+                                    } else {
+                                        // Step 2: Set new password
+                                        if (auth.updatePassword(currentUserId, profileInput.value)) {
+                                            success = true;
+                                        }
                                     }
                                 }
                             } else if (profileState == ProfileState::ConfirmDelete) {
@@ -243,6 +261,7 @@ int Menu::run() {
                             if (success || profileState == ProfileState::ConfirmDelete) {
                                 profileState = ProfileState::None;
                                 showProfileMenu = false;
+                                enteringOldPass = false;
                             }
                             #else
                             profileState = ProfileState::None;
@@ -296,9 +315,10 @@ int Menu::run() {
                             profileState = ProfileState::ChangePassword;
                             profileInput.value = "";
                             profileInput.isPassword = true;
-                            profileInput.label.setString(newPasswordStr);
+                            profileInput.label.setString(ru(u8"Старый пароль"));
                             profileInput.isActive = true;
-                            saveProfileBtn.text.setString(saveStr);
+                            saveProfileBtn.text.setString(confirmStr);
+                            enteringOldPass = false;
                             continue;
                         }
                         currentY += 40;
@@ -584,9 +604,9 @@ int Menu::run() {
             window.draw(modal);
             
             Text modalTitle(font);
-            if (profileState == ProfileState::EditUsername) modalTitle.setString(ru(Strings::CHANGE_USERNAME));
-            else if (profileState == ProfileState::ChangePassword) modalTitle.setString(ru(Strings::CHANGE_PASSWORD));
-            else if (profileState == ProfileState::ConfirmDelete) modalTitle.setString(ru(Strings::DELETE_YOUR_ACCOUNT));
+            if (profileState == ProfileState::EditUsername) modalTitle.setString(ru(u8"Сменить имя"));
+            else if (profileState == ProfileState::ChangePassword) modalTitle.setString(ru(u8"Сменить пароль"));
+            else if (profileState == ProfileState::ConfirmDelete) modalTitle.setString(ru(u8"Удалить аккаунт?"));
             
             modalTitle.setCharacterSize(20);
             modalTitle.setFillColor(Color::White);
@@ -598,7 +618,7 @@ int Menu::run() {
             
             if (profileState == ProfileState::ConfirmDelete) {
                 Text warnText(font);
-                warnText.setString(ru(Strings::CANNOT_UNDO));
+                warnText.setString(ru(u8"Это действие необратимо."));
                 warnText.setCharacterSize(14);
                 warnText.setFillColor(Color(200, 100, 100));
                 FloatRect warnRect = warnText.getLocalBounds();
@@ -638,7 +658,7 @@ int Menu::run() {
 }
 
 int Menu::selectParticleCount() {
-    RenderWindow window(VideoMode({600, 400}), ru(Strings::SELECT_PARTICLE_COUNT), 
+    RenderWindow window(VideoMode({600, 400}), ru(u8"Выберите кол-во частиц"), 
                            Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
     
@@ -670,7 +690,7 @@ int Menu::selectParticleCount() {
     confirmBtn.shape.setOrigin({100, 22.5f});
     confirmBtn.shape.setPosition({300, 300});
     confirmBtn.shape.setFillColor(Color(30, 215, 96));
-    confirmBtn.text.setString(ru(Strings::START));
+    confirmBtn.text.setString(ru(u8"СТАРТ"));
     confirmBtn.text.setCharacterSize(16);
     confirmBtn.text.setFillColor(Color::Black);
     confirmBtn.text.setStyle(Text::Bold);
@@ -679,7 +699,7 @@ int Menu::selectParticleCount() {
     confirmBtn.text.setPosition({300, 300});
     
     bool isDragging = false;
-    String titleStr = ru(Strings::PARTICLE_COUNT);
+    String titleStr = ru(u8"Количество частиц");
     
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -815,7 +835,7 @@ bool Menu::showLoginScreen() {
     userBox.text.setCharacterSize(18);
     userBox.text.setFillColor(Color::White);
     userBox.text.setPosition({width/2 - 140, 238});
-    userBox.label.setString(ru(Strings::USERNAME_LABEL));
+    userBox.label.setString(ru(u8"Имя пользователя"));
     userBox.label.setCharacterSize(14);
     userBox.label.setFillColor(Color(179, 179, 179));
     userBox.label.setPosition({width/2 - 150, 210});
@@ -829,7 +849,7 @@ bool Menu::showLoginScreen() {
     passBox.text.setFillColor(Color::White);
     passBox.text.setPosition({width/2 - 140, 318});
     passBox.isPassword = true;
-    passBox.label.setString(ru(Strings::PASSWORD_LABEL));
+    passBox.label.setString(ru(u8"Пароль"));
     passBox.label.setCharacterSize(14);
     passBox.label.setFillColor(Color(179, 179, 179));
     passBox.label.setPosition({width/2 - 150, 290});
@@ -839,7 +859,7 @@ bool Menu::showLoginScreen() {
     loginBtn.shape.setOrigin({150, 22.5f});
     loginBtn.shape.setPosition({width/2, 410});
     loginBtn.shape.setFillColor(Color(30, 215, 96));
-    loginBtn.text.setString(ru(Strings::LOG_IN));
+    loginBtn.text.setString(ru(u8"ВОЙТИ"));
     loginBtn.text.setCharacterSize(16);
     loginBtn.text.setFillColor(Color::Black);
     loginBtn.text.setStyle(Text::Bold);
@@ -854,7 +874,7 @@ bool Menu::showLoginScreen() {
     regBtn.shape.setFillColor(Color::Transparent);
     regBtn.shape.setOutlineThickness(1);
     regBtn.shape.setOutlineColor(Color(179, 179, 179));
-    regBtn.text.setString(ru(Strings::CREATE_ACCOUNT));
+    regBtn.text.setString(ru(u8"СОЗДАТЬ АККАУНТ"));
     regBtn.text.setCharacterSize(16);
     regBtn.text.setFillColor(Color::White);
     regBtn.text.setStyle(Text::Bold);
@@ -868,7 +888,7 @@ bool Menu::showLoginScreen() {
     statusText.setFillColor(Color(255, 80, 80));
     statusText.setPosition({width/2, 370});
 
-    String titleStr = ru(Strings::NBODY_SIMULATION);
+    String titleStr = ru(u8"N-BODY СИМУЛЯЦИЯ");
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -900,7 +920,7 @@ bool Menu::showLoginScreen() {
                         window.close();
                         return true;
                     } else {
-                        statusMsg = Strings::INVALID_CREDENTIALS;
+                        statusMsg = u8"Неверное имя или пароль";
                     }
                 }
             }
@@ -923,7 +943,7 @@ bool Menu::showLoginScreen() {
                             window.close();
                             return true;
                         } else {
-                            statusMsg = Strings::INVALID_CREDENTIALS;
+                            statusMsg = u8"Неверное имя или пароль";
                         }
                     }
 
@@ -994,7 +1014,7 @@ bool Menu::showRegisterScreen() {
     userBox.text.setCharacterSize(18);
     userBox.text.setFillColor(Color::White);
     userBox.text.setPosition({width/2 - 140, 238});
-    userBox.label.setString(ru(Strings::CHOOSE_USERNAME));
+    userBox.label.setString(ru(u8"Выберите имя"));
     userBox.label.setCharacterSize(14);
     userBox.label.setFillColor(Color(179, 179, 179));
     userBox.label.setPosition({width/2 - 150, 210});
@@ -1008,7 +1028,7 @@ bool Menu::showRegisterScreen() {
     passBox.text.setFillColor(Color::White);
     passBox.text.setPosition({width/2 - 140, 318});
     passBox.isPassword = true;
-    passBox.label.setString(ru(Strings::CHOOSE_PASSWORD));
+    passBox.label.setString(ru(u8"Выберите пароль"));
     passBox.label.setCharacterSize(14);
     passBox.label.setFillColor(Color(179, 179, 179));
     passBox.label.setPosition({width/2 - 150, 290});
@@ -1018,7 +1038,7 @@ bool Menu::showRegisterScreen() {
     regBtn.shape.setOrigin({150, 22.5f});
     regBtn.shape.setPosition({width/2, 410});
     regBtn.shape.setFillColor(Color(30, 215, 96));
-    regBtn.text.setString(ru(Strings::SIGN_UP));
+    regBtn.text.setString(ru(u8"РЕГИСТРАЦИЯ"));
     regBtn.text.setCharacterSize(16);
     regBtn.text.setFillColor(Color::Black);
     regBtn.text.setStyle(Text::Bold);
@@ -1033,7 +1053,7 @@ bool Menu::showRegisterScreen() {
     backBtn.shape.setFillColor(Color::Transparent);
     backBtn.shape.setOutlineThickness(1);
     backBtn.shape.setOutlineColor(Color(179, 179, 179));
-    backBtn.text.setString(ru(Strings::BACK_TO_LOGIN));
+    backBtn.text.setString(ru(u8"НАЗАД"));
     backBtn.text.setCharacterSize(16);
     backBtn.text.setFillColor(Color::White);
     backBtn.text.setStyle(Text::Bold);
@@ -1047,7 +1067,7 @@ bool Menu::showRegisterScreen() {
     statusText.setFillColor(Color(255, 80, 80));
     statusText.setPosition({width/2, 370});
 
-    String titleStr = ru(Strings::CREATE_ACCOUNT);
+    String titleStr = ru(u8"СОЗДАТЬ АККАУНТ");
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -1075,12 +1095,12 @@ bool Menu::showRegisterScreen() {
                     passBox.shape.setOutlineColor(Color::White);
                 } else if (key->code == Keyboard::Key::Enter) {
                     if (userBox.value.length() < 3 || passBox.value.length() < 3) {
-                        statusMsg = Strings::TOO_SHORT;
+                        statusMsg = u8"Имя/Пароль слишком короткие";
                     } else if (auth.registerUser(userBox.value, passBox.value)) {
                         window.close();
                         return showLoginScreen();
                     } else {
-                        statusMsg = Strings::USERNAME_TAKEN;
+                        statusMsg = u8"Имя уже занято";
                     }
                 }
             }
@@ -1099,12 +1119,12 @@ bool Menu::showRegisterScreen() {
 
                     if (regBtn.shape.getGlobalBounds().contains(mousePos)) {
                         if (userBox.value.length() < 3 || passBox.value.length() < 3) {
-                            statusMsg = Strings::TOO_SHORT;
+                            statusMsg = u8"Имя/Пароль слишком короткие";
                         } else if (auth.registerUser(userBox.value, passBox.value)) {
                             window.close();
                             return showLoginScreen();
                         } else {
-                            statusMsg = Strings::USERNAME_TAKEN;
+                            statusMsg = u8"Имя уже занято";
                         }
                     }
 
@@ -1192,7 +1212,7 @@ double Menu::selectTheta() {
     confirmBtn.shape.setOrigin({100, 22.5f});
     confirmBtn.shape.setPosition({300, 300});
     confirmBtn.shape.setFillColor(Color(30, 215, 96));
-    confirmBtn.text.setString(ru(Strings::START));
+    confirmBtn.text.setString(ru(u8"СТАРТ"));
     confirmBtn.text.setCharacterSize(16);
     confirmBtn.text.setFillColor(Color::Black);
     confirmBtn.text.setStyle(Text::Bold);
@@ -1201,7 +1221,7 @@ double Menu::selectTheta() {
     confirmBtn.text.setPosition({300, 300});
     
     bool isDragging = false;
-    String titleStr = ru(Strings::BARNES_HUT_THETA);
+    String titleStr = ru(u8"Барнс-Хат Тета");
     
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -1323,7 +1343,7 @@ double Menu::selectTheta() {
 
 void Menu::showAdminPanel() {
 #ifdef ENABLE_AUTH
-    RenderWindow window(VideoMode({900, 700}), ru(Strings::ADMIN_PANEL), Style::Titlebar | Style::Close);
+    RenderWindow window(VideoMode({900, 700}), ru(u8"Админ панель"), Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
     
     AuthManager auth;
@@ -1346,7 +1366,7 @@ void Menu::showAdminPanel() {
     searchBox.text.setCharacterSize(16);
     searchBox.text.setFillColor(Color::White);
     searchBox.text.setPosition({120, 68});
-    searchBox.label.setString(ru(Strings::SEARCH_PLACEHOLDER));
+    searchBox.label.setString(ru(u8"Поиск по имени..."));
     searchBox.label.setCharacterSize(14);
     searchBox.label.setFillColor(Color(150, 150, 150));
     searchBox.label.setPosition({120, 68});
@@ -1364,7 +1384,7 @@ void Menu::showAdminPanel() {
     saveBtn.shape.setSize({140, 40});
     saveBtn.shape.setPosition({370, 410});
     saveBtn.shape.setFillColor(Color(30, 215, 96));
-    saveBtn.text.setString(ru(Strings::SAVE));
+    saveBtn.text.setString(ru(u8"СОХРАНИТЬ"));
     saveBtn.text.setCharacterSize(14);
     saveBtn.text.setFillColor(Color::Black);
     FloatRect saveRect = saveBtn.text.getLocalBounds();
@@ -1375,7 +1395,7 @@ void Menu::showAdminPanel() {
     cancelBtn.shape.setSize({140, 40});
     cancelBtn.shape.setPosition({530, 410});
     cancelBtn.shape.setFillColor(Color(200, 50, 50));
-    cancelBtn.text.setString(ru(Strings::CANCEL));
+    cancelBtn.text.setString(ru(u8"ОТМЕНА"));
     cancelBtn.text.setCharacterSize(14);
     cancelBtn.text.setFillColor(Color::White);
     FloatRect cancelRect = cancelBtn.text.getLocalBounds();
@@ -1386,25 +1406,25 @@ void Menu::showAdminPanel() {
     backBtn.shape.setSize({80, 35});
     backBtn.shape.setPosition({20, 60});
     backBtn.shape.setFillColor(Color(60, 60, 60));
-    backBtn.text.setString(ru(Strings::BACK));
+    backBtn.text.setString(ru(u8"НАЗАД"));
     backBtn.text.setCharacterSize(14);
     backBtn.text.setFillColor(Color::White);
     FloatRect backRect = backBtn.text.getLocalBounds();
     backBtn.text.setOrigin({backRect.position.x + backRect.size.x/2.0f, backRect.position.y + backRect.size.y/2.0f});
     backBtn.text.setPosition({60, 77});
 
-    String userMgmtStr = ru(Strings::USER_MANAGEMENT);
-    String idStr = ru(Strings::ID);
-    String usernameStr = ru(Strings::USERNAME);
-    String roleStr = ru(Strings::ROLE);
-    String createdStr = ru(Strings::CREATED_AT);
-    String actionsStr = ru(Strings::ACTIONS);
-    String editUserStr = ru(Strings::EDIT_USER_FOR);
-    String changePassStr = ru(Strings::CHANGE_PASS_FOR);
-    String deleteUserStr = ru(Strings::DELETE_USER);
-    String passForStr = ru(Strings::PASSWORD_FOR);
-    String closeHintStr = ru(Strings::CLICK_TO_CLOSE);
-    String cannotUndoneStr = ru(Strings::CANNOT_UNDO);
+    String userMgmtStr = ru(u8"УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ");
+    String idStr = ru("ID");
+    String usernameStr = ru(u8"ИМЯ");
+    String roleStr = ru(u8"РОЛЬ");
+    String createdStr = ru(u8"СОЗДАН");
+    String actionsStr = ru(u8"ДЕЙСТВИЯ");
+    String editUserStr = ru(u8"Изменить имя для ");
+    String changePassStr = ru(u8"Сменить пароль для ");
+    String deleteUserStr = ru(u8"Удалить ");
+    String passForStr = ru(u8"Пароль для ");
+    String closeHintStr = ru(u8"Нажмите везде, чтобы закрыть");
+    String cannotUndoneStr = ru(u8"Это действие необратимо.");
 
     while (window.isOpen()) {
         Vector2i mousePos = Mouse::getPosition(window);
@@ -1593,11 +1613,10 @@ void Menu::showAdminPanel() {
             window.draw(t);
         };
         
-        drawHeader(idStr, 20);
-        drawHeader(usernameStr, 70);
-        drawHeader(roleStr, 280);
-        drawHeader(createdStr, 500);
-        drawHeader(actionsStr, 700);
+        drawHeader(usernameStr, 20);
+        drawHeader(roleStr, 230);
+        drawHeader(createdStr, 450);
+        drawHeader(actionsStr, 650);
         
         RectangleShape line({860.0f, 1.0f});
         line.setPosition({20, 120});
@@ -1607,22 +1626,15 @@ void Menu::showAdminPanel() {
         float y = 130 + scrollY;
         for (const auto& user : displayUsers) {
             if (y > 110 && y < 700) {
-                Text idText(font);
-                idText.setString(to_string(user.id));
-                idText.setCharacterSize(14);
-                idText.setPosition({20, y + 5});
-                idText.setFillColor(Color(100, 100, 100));
-                window.draw(idText);
-                
                 Text userText(font);
                 userText.setString(user.username);
                 userText.setCharacterSize(16);
-                userText.setPosition({70, y + 4});
+                userText.setPosition({20, y + 4});
                 userText.setFillColor(Color::White);
                 window.draw(userText);
                 
                 RectangleShape roleBtn({100, 24});
-                roleBtn.setPosition({280, y + 2});
+                roleBtn.setPosition({230, y + 2});
                 roleBtn.setFillColor(user.is_admin ? Color(60, 20, 20) : Color(20, 60, 20));
                 roleBtn.setOutlineColor(user.is_admin ? Color(200, 50, 50) : Color(50, 200, 100));
                 roleBtn.setOutlineThickness(1);
@@ -1634,18 +1646,18 @@ void Menu::showAdminPanel() {
                 roleText.setFillColor(Color::White);
                 FloatRect roleRect = roleText.getLocalBounds();
                 roleText.setOrigin({roleRect.position.x + roleRect.size.x/2, roleRect.position.y + roleRect.size.y/2});
-                roleText.setPosition({330, y + 14});
+                roleText.setPosition({280, y + 14});
                 window.draw(roleText);
                 
                 Text dateText(font);
                 string dateStr = user.created_at.substr(0, 19);
                 dateText.setString(dateStr);
                 dateText.setCharacterSize(14);
-                dateText.setPosition({500, y + 5});
+                dateText.setPosition({450, y + 5});
                 dateText.setFillColor(Color(150, 150, 150));
                 window.draw(dateText);
                 
-                float actionX = 700;
+                float actionX = 650;
                 auto drawActionBtn = [&](const string& label, float x, Color color) {
                     RectangleShape btn({35, 24});
                     btn.setPosition({x, y + 2});

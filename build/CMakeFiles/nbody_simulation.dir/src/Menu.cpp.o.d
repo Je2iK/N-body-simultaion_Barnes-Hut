@@ -292,7 +292,6 @@ CMakeFiles/nbody_simulation.dir/src/Menu.cpp.o: \
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/sfml-src/include/SFML/System/MemoryInputStream.hpp \
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/sfml-src/include/SFML/System/Sleep.hpp \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
- /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h \
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Utils.h \
  /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/Star.h \
  /usr/include/c++/15/cmath /usr/include/math.h \

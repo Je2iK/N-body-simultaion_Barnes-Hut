@@ -338,7 +338,6 @@ CMakeFiles/nbody_simulation.dir/src/Benchmark.cpp.o: \
  /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
  /usr/include/c++/15/bits/stl_numeric.h \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
- /home/osnsab/Документы/N-body-simultaion_Barnes-Hut/include/RuStrings.h \
  /usr/include/c++/15/iostream /usr/include/c++/15/fstream \
  /usr/include/x86_64-linux-gnu/c++/15/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/c++io.h \
