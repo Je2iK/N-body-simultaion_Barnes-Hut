@@ -55,6 +55,21 @@ bool AuthManager::connect() {
             
             work txn(*conn);
             txn.exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE");
+            
+            // Create benchmark_results table
+            txn.exec(R"(
+                CREATE TABLE IF NOT EXISTS benchmark_results (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                    algorithm_name VARCHAR(50) NOT NULL,
+                    particle_count INTEGER NOT NULL,
+                    steps INTEGER NOT NULL,
+                    duration_ms INTEGER NOT NULL,
+                    fps_equivalent DOUBLE PRECISION NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            )");
+
             // real_password column removed for security
             
             // Remove duplicates if any exist (keep oldest)

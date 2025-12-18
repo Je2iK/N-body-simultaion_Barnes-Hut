@@ -4,8 +4,24 @@ project(NBodySimulation)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Options
-option(ENABLE_AUTH "Enable authentication (requires libpqxx)" ON)
+# Find system dependencies
+find_package(PkgConfig REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(Freetype REQUIRED)
+
+# Find X11 libraries
+find_package(X11 REQUIRED)
+if(NOT X11_FOUND)
+    message(FATAL_ERROR "X11 libraries not found")
+endif()
+
+# Find additional X11 components
+pkg_check_modules(XRANDR REQUIRED xrandr)
+pkg_check_modules(XCURSOR REQUIRED xcursor)
+pkg_check_modules(XI REQUIRED xi)
+
+# Find udev
+pkg_check_modules(UDEV REQUIRED libudev)
 
 # Optimization flags
 if(MSVC)
@@ -14,8 +30,10 @@ else()
     add_compile_options(-O3 -march=native -pthread)
 endif()
 
-# Fetch SFML 3
+# Fetch dependencies
 include(FetchContent)
+
+# Fetch SFML 3
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -25,10 +43,31 @@ set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
+
+# Fetch libpqxx
+if(ENABLE_AUTH)
+    FetchContent_Declare(
+        libpqxx
+        GIT_REPOSITORY https://github.com/jtv/libpqxx.git
+        GIT_TAG        7.9.0
+    )
+    set(SKIP_BUILD_TEST ON CACHE BOOL "" FORCE)
+endif()
+
 FetchContent_MakeAvailable(SFML)
+if(ENABLE_AUTH)
+    FetchContent_MakeAvailable(libpqxx)
+endif()
 
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/include)
+target_include_directories(nbody_simulation PRIVATE
+    ${X11_INCLUDE_DIR}
+    ${XRANDR_INCLUDE_DIRS}
+    ${XCURSOR_INCLUDE_DIRS}
+    ${XI_INCLUDE_DIRS}
+    ${UDEV_INCLUDE_DIRS}
+)
 
 # Source files
 set(SOURCES
@@ -49,12 +88,19 @@ endif()
 add_executable(nbody_simulation ${SOURCES})
 
 # Link libraries
-target_link_libraries(nbody_simulation PRIVATE SFML::Graphics SFML::Window SFML::System)
+target_link_libraries(nbody_simulation PRIVATE 
+    SFML::Graphics SFML::Window SFML::System
+    OpenGL::GL
+    Freetype::Freetype
+    ${X11_LIBRARIES}
+    ${XRANDR_LIBRARIES}
+    ${XCURSOR_LIBRARIES}
+    ${XI_LIBRARIES}
+    ${UDEV_LIBRARIES}
+)
 
 if(ENABLE_AUTH)
-    # On Linux, usually linked via pkg-config or standard paths.
-    # On Windows, ensure 'pqxx' and 'pq' are available (e.g. via vcpkg).
-    target_link_libraries(nbody_simulation PRIVATE pqxx pq)
+    target_link_libraries(nbody_simulation PRIVATE pqxx)
     target_compile_definitions(nbody_simulation PRIVATE ENABLE_AUTH)
 endif()
 

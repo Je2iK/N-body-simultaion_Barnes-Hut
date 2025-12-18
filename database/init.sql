@@ -6,6 +6,17 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS benchmark_results (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    algorithm_name VARCHAR(50) NOT NULL,
+    particle_count INTEGER NOT NULL,
+    steps INTEGER NOT NULL,
+    duration_ms INTEGER NOT NULL,
+    fps_equivalent DOUBLE PRECISION NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Default admin (password: admin123)
 -- Hash for 'admin123' (SHA256): 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INSERT INTO users (username, password_hash, is_admin) 

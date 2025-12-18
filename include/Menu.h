@@ -94,6 +94,7 @@ private:
     void updateBackground();
     void drawBackground(RenderWindow& window);
     void showAdminPanel();
+    void showSettings();
 };
 
 #endif // MENU_H

@@ -14,7 +14,8 @@ help: ## Показать эту справку
 
 up: 
 	@xhost +local:docker > /dev/null 2>&1 || true
-	@sudo docker compose up --abort-on-container-exit
+	@sudo docker compose up --abort-on-container-exit || true
+	@sudo docker compose down
 
 down:@sudo docker compose down
 	@xhost -local:docker > /dev/null 2>&1 || true

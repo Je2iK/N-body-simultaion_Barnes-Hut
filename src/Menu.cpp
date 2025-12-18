@@ -148,27 +148,36 @@ int Menu::run() {
     profileInput.text.setFillColor(Color::White);
     profileInput.text.setPosition({width/2 - 140, height/2 - 32});
     
+    InputBox profileInput2(font);
+    profileInput2.shape.setSize({300, 40});
+    profileInput2.shape.setOrigin({150, 20});
+    profileInput2.shape.setPosition({width/2, height/2 + 30});
+    profileInput2.shape.setFillColor(Color(40, 40, 40));
+    profileInput2.text.setCharacterSize(18);
+    profileInput2.text.setFillColor(Color::White);
+    profileInput2.text.setPosition({width/2 - 140, height/2 + 18});
+    
     Button saveProfileBtn(font);
     saveProfileBtn.shape.setSize({140, 40});
-    saveProfileBtn.shape.setPosition({width/2 - 150, height/2 + 40});
+    saveProfileBtn.shape.setPosition({width/2 - 150, height/2 + 80});
     saveProfileBtn.shape.setFillColor(Color(30, 215, 96));
     saveProfileBtn.text.setString(ru(u8"СОХРАНИТЬ"));
     saveProfileBtn.text.setCharacterSize(14);
     saveProfileBtn.text.setFillColor(Color::Black);
     FloatRect saveRect = saveProfileBtn.text.getLocalBounds();
     saveProfileBtn.text.setOrigin({saveRect.position.x + saveRect.size.x/2.0f, saveRect.position.y + saveRect.size.y/2.0f});
-    saveProfileBtn.text.setPosition({width/2 - 80, height/2 + 60});
+    saveProfileBtn.text.setPosition({width/2 - 80, height/2 + 100});
     
     Button cancelProfileBtn(font);
     cancelProfileBtn.shape.setSize({140, 40});
-    cancelProfileBtn.shape.setPosition({width/2 + 10, height/2 + 40});
+    cancelProfileBtn.shape.setPosition({width/2 + 10, height/2 + 80});
     cancelProfileBtn.shape.setFillColor(Color(200, 50, 50));
     cancelProfileBtn.text.setString(ru(u8"ОТМЕНА"));
     cancelProfileBtn.text.setCharacterSize(14);
     cancelProfileBtn.text.setFillColor(Color::White);
     FloatRect cancelRect = cancelProfileBtn.text.getLocalBounds();
     cancelProfileBtn.text.setOrigin({cancelRect.position.x + cancelRect.size.x/2.0f, cancelRect.position.y + cancelRect.size.y/2.0f});
-    cancelProfileBtn.text.setPosition({width/2 + 80, height/2 + 60});
+    cancelProfileBtn.text.setPosition({width/2 + 80, height/2 + 100});
 
 #ifdef ENABLE_AUTH
     AuthManager auth;
@@ -196,6 +205,7 @@ int Menu::run() {
     String saveStr = ru(u8"СОХРАНИТЬ");
     String newUsernameStr = ru(u8"Новое имя");
     String newPasswordStr = ru(u8"Новый пароль");
+    String oldPasswordStr = ru(u8"Старый пароль");
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -207,12 +217,16 @@ int Menu::run() {
             // Handle input for profile modals
             if (profileState == ProfileState::EditUsername || profileState == ProfileState::ChangePassword) {
                 profileInput.handleInput(*event);
+                if (profileState == ProfileState::ChangePassword) {
+                    profileInput2.handleInput(*event);
+                }
             }
+            
+            Vector2i mousePos = Mouse::getPosition(window);
+            Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
             
             if (const auto* mouseBtn = event->getIf<Event::MouseButtonPressed>()) {
                 if (mouseBtn->button == Mouse::Button::Left) {
-                    Vector2i mousePos = Mouse::getPosition(window);
-                    Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
                     
                     // If modal is open, handle modal clicks only
                     if (profileState != ProfileState::None) {
@@ -227,26 +241,17 @@ int Menu::run() {
                                     }
                                 }
                             } else if (profileState == ProfileState::ChangePassword) {
-                                if (!profileInput.value.empty()) {
-                                    if (!enteringOldPass) {
-                                        // Step 1: Verify old password
-                                        if (auth.loginUser(current_username, profileInput.value)) {
-                                            enteringOldPass = true;
-                                            profileInput.value = "";
-                                            profileInput.label.setString(newPasswordStr);
-                                            saveProfileBtn.text.setString(saveStr);
-                                            // Don't close modal yet
-                                            continue;
-                                        } else {
-                                            // Show error (visual feedback could be improved)
-                                            profileInput.value = "";
-                                            // Ideally show an error message, but for now just clear
-                                        }
-                                    } else {
-                                        // Step 2: Set new password
-                                        if (auth.updatePassword(currentUserId, profileInput.value)) {
+                                if (!profileInput.value.empty() && !profileInput2.value.empty()) {
+                                    // Verify old password
+                                    if (auth.loginUser(current_username, profileInput.value)) {
+                                        // Set new password
+                                        if (auth.updatePassword(currentUserId, profileInput2.value)) {
                                             success = true;
                                         }
+                                    } else {
+                                        // Invalid old password
+                                        profileInput.value = "";
+                                        profileInput2.value = "";
                                     }
                                 }
                             } else if (profileState == ProfileState::ConfirmDelete) {
@@ -261,7 +266,6 @@ int Menu::run() {
                             if (success || profileState == ProfileState::ConfirmDelete) {
                                 profileState = ProfileState::None;
                                 showProfileMenu = false;
-                                enteringOldPass = false;
                             }
                             #else
                             profileState = ProfileState::None;
@@ -275,8 +279,13 @@ int Menu::run() {
                         // Activate input
                         if (profileInput.shape.getGlobalBounds().contains(mousePosF)) {
                             profileInput.isActive = true;
+                            profileInput2.isActive = false;
+                        } else if (profileState == ProfileState::ChangePassword && profileInput2.shape.getGlobalBounds().contains(mousePosF)) {
+                            profileInput.isActive = false;
+                            profileInput2.isActive = true;
                         } else {
                             profileInput.isActive = false;
+                            profileInput2.isActive = false;
                         }
                         continue; // Skip other clicks
                     }
@@ -295,7 +304,6 @@ int Menu::run() {
                         float menuY = 70;
                         float itemHeight = 40;
                         float currentY = menuY + 65; // Skip header
-                        
                         // Change Username
                         FloatRect userRect({menuX + 10, currentY}, {180, 35});
                         if (userRect.contains(mousePosF)) {
@@ -315,10 +323,15 @@ int Menu::run() {
                             profileState = ProfileState::ChangePassword;
                             profileInput.value = "";
                             profileInput.isPassword = true;
-                            profileInput.label.setString(ru(u8"Старый пароль"));
+                            profileInput.label.setString(oldPasswordStr);
                             profileInput.isActive = true;
-                            saveProfileBtn.text.setString(confirmStr);
-                            enteringOldPass = false;
+                            
+                            profileInput2.value = "";
+                            profileInput2.isPassword = true;
+                            profileInput2.label.setString(newPasswordStr);
+                            profileInput2.isActive = false;
+                            
+                            saveProfileBtn.text.setString(saveStr);
                             continue;
                         }
                         currentY += 40;
@@ -495,6 +508,7 @@ int Menu::run() {
                 window.draw(btn.text);
             }
         }
+
         
         // --- PROFILE UI ---
         
@@ -643,6 +657,27 @@ int Menu::run() {
                     focusBorder.setOutlineColor(Color(30, 215, 96));
                     focusBorder.setOutlineThickness(2);
                     window.draw(focusBorder);
+                }
+
+                if (profileState == ProfileState::ChangePassword) {
+                    window.draw(profileInput2.label);
+                    window.draw(profileInput2.shape);
+                    
+                    // Mask password
+                    string displayVal2 = profileInput2.value;
+                    if (profileInput2.isPassword) {
+                        displayVal2 = string(displayVal2.length(), '*');
+                    }
+                    profileInput2.text.setString(displayVal2 + (profileInput2.isActive ? "|" : ""));
+                    window.draw(profileInput2.text);
+
+                    if (profileInput2.isActive) {
+                        RectangleShape focusBorder = profileInput2.shape;
+                        focusBorder.setFillColor(Color::Transparent);
+                        focusBorder.setOutlineColor(Color(30, 215, 96));
+                        focusBorder.setOutlineThickness(2);
+                        window.draw(focusBorder);
+                    }
                 }
             }
             
@@ -1339,6 +1374,113 @@ double Menu::selectTheta() {
     }
     
     return currentTheta;
+}
+
+void Menu::showSettings() {
+    RenderWindow window(VideoMode({600, 500}), ru(u8"НАСТРОЙКИ"), Style::Titlebar | Style::Close);
+    window.setFramerateLimit(60);
+    
+    // Load current settings from env or defaults
+    string dbHost = getenv("DB_HOST") ? getenv("DB_HOST") : "127.0.0.1";
+    string dbPort = getenv("DB_PORT") ? getenv("DB_PORT") : "5432";
+    string dbName = getenv("DB_NAME") ? getenv("DB_NAME") : "nbody_db";
+    string dbUser = getenv("DB_USER") ? getenv("DB_USER") : "nbody_user";
+    string dbPass = getenv("DB_PASSWORD") ? getenv("DB_PASSWORD") : "nbody_password";
+    
+    auto createInput = [&](float y, const string& label, const string& val) {
+        InputBox box(font);
+        box.shape.setSize({300, 35});
+        box.shape.setOrigin({150, 17.5f});
+        box.shape.setPosition({300, y});
+        box.shape.setFillColor(Color(40, 40, 40));
+        box.text.setCharacterSize(16);
+        box.text.setFillColor(Color::White);
+        box.text.setPosition({160, y - 10});
+        box.label.setString(ru(label));
+        box.label.setCharacterSize(14);
+        box.label.setFillColor(Color(150, 150, 150));
+        box.label.setPosition({150, y - 40});
+        box.value = val;
+        return box;
+    };
+    
+    InputBox hostBox = createInput(80, "DB Host", dbHost);
+    InputBox portBox = createInput(150, "DB Port", dbPort);
+    InputBox nameBox = createInput(220, "DB Name", dbName);
+    InputBox userBox = createInput(290, "DB User", dbUser);
+    InputBox passBox = createInput(360, "DB Password", dbPass);
+    passBox.isPassword = true;
+    
+    Button saveBtn(font);
+    saveBtn.shape.setSize({140, 40});
+    saveBtn.shape.setPosition({220, 420});
+    saveBtn.shape.setFillColor(Color(30, 215, 96));
+    saveBtn.text.setString(ru(u8"СОХРАНИТЬ"));
+    saveBtn.text.setCharacterSize(14);
+    saveBtn.text.setFillColor(Color::Black);
+    FloatRect saveRect = saveBtn.text.getLocalBounds();
+    saveBtn.text.setOrigin({saveRect.position.x + saveRect.size.x/2.0f, saveRect.position.y + saveRect.size.y/2.0f});
+    saveBtn.text.setPosition({290, 440});
+    
+    vector<InputBox*> boxes = {&hostBox, &portBox, &nameBox, &userBox, &passBox};
+    
+    while (window.isOpen()) {
+        while (const optional event = window.pollEvent()) {
+            if (event->is<Event::Closed>()) {
+                window.close();
+            }
+            
+            for (auto* box : boxes) {
+                box->handleInput(*event);
+            }
+            
+            if (const auto* mouseBtn = event->getIf<Event::MouseButtonPressed>()) {
+                if (mouseBtn->button == Mouse::Button::Left) {
+                    Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
+                    
+                    for (auto* box : boxes) {
+                        if (box->shape.getGlobalBounds().contains(mousePos)) {
+                            box->isActive = true;
+                        } else {
+                            box->isActive = false;
+                        }
+                    }
+                    
+                    if (saveBtn.shape.getGlobalBounds().contains(mousePos)) {
+                        // Save to env vars for current session
+                        setenv("DB_HOST", hostBox.value.c_str(), 1);
+                        setenv("DB_PORT", portBox.value.c_str(), 1);
+                        setenv("DB_NAME", nameBox.value.c_str(), 1);
+                        setenv("DB_USER", userBox.value.c_str(), 1);
+                        setenv("DB_PASSWORD", passBox.value.c_str(), 1);
+                        window.close();
+                    }
+                }
+            }
+        }
+        
+        window.clear(Color(18, 18, 18));
+        
+        for (auto* box : boxes) {
+            box->updateDisplay();
+            window.draw(box->label);
+            window.draw(box->shape);
+            window.draw(box->text);
+            
+            if (box->isActive) {
+                RectangleShape border = box->shape;
+                border.setFillColor(Color::Transparent);
+                border.setOutlineColor(Color(30, 215, 96));
+                border.setOutlineThickness(1);
+                window.draw(border);
+            }
+        }
+        
+        window.draw(saveBtn.shape);
+        window.draw(saveBtn.text);
+        
+        window.display();
+    }
 }
 
 void Menu::showAdminPanel() {
