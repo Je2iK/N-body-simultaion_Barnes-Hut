@@ -65,6 +65,7 @@ set(SOURCES
     src/BruteForceSimulator.cpp
     src/Benchmark.cpp
     src/Menu.cpp
+    src/QueryLoader.cpp
 )
 
 if(ENABLE_AUTH)

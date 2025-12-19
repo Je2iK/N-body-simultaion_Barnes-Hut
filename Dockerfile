@@ -9,8 +9,6 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     git \
-    libpqxx-dev \
-    libpq-dev \
     libx11-dev \
     libxrandr-dev \
     libxcursor-dev \
@@ -32,7 +30,7 @@ COPY . .
 
 # Build the application
 RUN mkdir -p build && cd build && \
-    cmake -DENABLE_AUTH=ON -DCMAKE_BUILD_TYPE=Release .. && \
+    cmake -DENABLE_AUTH=OFF -DCMAKE_BUILD_TYPE=Release .. && \
     make -j$(nproc)
 
 # Runtime stage
@@ -43,8 +41,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
-    libpqxx-6.4 \
-    libpq5 \
     libx11-6 \
     libxrandr2 \
     libxcursor1 \
@@ -55,7 +51,6 @@ RUN apt-get update && apt-get install -y \
     libopenal1 \
     libflac8 \
     libvorbis0a \
-    libvorbisenc2 \
     libsfml-dev \
     fonts-dejavu \
     fonts-liberation \
