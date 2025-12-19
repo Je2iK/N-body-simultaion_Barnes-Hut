@@ -39,10 +39,8 @@ string Benchmark::getComparisonResult(ISimulator *sim1, ISimulator *sim2,
 {
     stringstream ss;
 
-    // Create galaxy once and reuse for fair comparison
     auto stars = createGalaxy(num_particles, 500.0, 800.0, 800.0);
     
-    // Copy stars for second simulation to ensure identical initial state
     auto stars2 = stars;
 
     auto res1 = run(sim1, stars, num_steps);
@@ -93,7 +91,6 @@ void Benchmark::saveResult(const BenchmarkResult& result, const string& filename
         file << "Threads: " << result.num_threads << "\n";
         file << "Complexity: " << result.complexity << "\n";
         
-        // Timestamp
         auto now = chrono::system_clock::to_time_t(chrono::system_clock::now());
         file << "Date: " << put_time(localtime(&now), "%Y-%m-%d %H:%M:%S") << "\n";
         file << "----------------------------------------\n\n";

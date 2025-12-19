@@ -13,16 +13,12 @@ class Menu {
 public:
     Menu(float width, float height);
     
-    // Returns selected menu item (or 0 if exit)
     int run();
     
-    // Returns selected particle count (100, 500, 1000, 2500, 5000)
     int selectParticleCount();
     
-    // Returns selected theta value (0.1 - 2.0)
     double selectTheta();
     
-    // Auth methods
     bool showLoginScreen();
     bool showRegisterScreen();
 
@@ -88,7 +84,7 @@ private:
     Font font;
     vector<Button> buttons;
     vector<BackgroundStar> stars;
-    string current_username;  // Store logged in username
+    string current_username; 
     
     void addButton(const string& text, int id, float x, float y, float width, float height);
     void updateBackground();

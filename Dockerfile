@@ -1,10 +1,7 @@
-# Build stage
 FROM ubuntu:22.04 AS builder
 
-# Set non-interactive mode for apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install build dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -24,24 +21,18 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy source files
 COPY . .
 
-# Build the application
 RUN mkdir -p build && cd build && \
     cmake -DENABLE_AUTH=ON -DCMAKE_BUILD_TYPE=Release .. && \
     make -j$(nproc)
 
-# Runtime stage
 FROM ubuntu:22.04
 
-# Set non-interactive mode for apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     libpqxx-6.4 \
     libpq5 \
@@ -63,14 +54,10 @@ RUN apt-get update && apt-get install -y \
     xauth \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy built executable from builder
 COPY --from=builder /app/build/nbody_simulation /app/nbody_simulation
 
-# Set display for X11
 ENV DISPLAY=:0
 
-# Run the application
 CMD ["./nbody_simulation"]

@@ -28,7 +28,6 @@ make up
 ## Команды Makefile
 
 - `make up` - Запуск через Docker
-- `make down` - Остановка контейнеров
 
 ## Алгоритмы
 

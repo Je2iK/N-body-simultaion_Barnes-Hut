@@ -4,7 +4,6 @@ project(NBodySimulation)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Системные зависимости
 find_package(PkgConfig REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
@@ -18,17 +17,14 @@ pkg_check_modules(XRANDR REQUIRED xrandr)
 pkg_check_modules(XCURSOR REQUIRED xcursor)
 pkg_check_modules(XI REQUIRED xi)
 
-# Optimization flags
 if(MSVC)
     add_compile_options(/O2 /arch:AVX2)
 else()
     add_compile_options(-O3 -march=native -pthread)
 endif()
 
-# Fetch dependencies
 include(FetchContent)
 
-# Загрузка SFML 3
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -39,7 +35,6 @@ set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
 
-# Загрузка libpqxx для аутентификации
 if(ENABLE_AUTH)
     FetchContent_Declare(
         libpqxx
@@ -56,7 +51,6 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# Исходные файлы
 set(SOURCES
     src/main.cpp
     src/Utils.cpp
@@ -71,10 +65,8 @@ if(ENABLE_AUTH)
     list(APPEND SOURCES src/AuthManager.cpp)
 endif()
 
-# Executable
 add_executable(nbody_simulation ${SOURCES})
 
-# Target-specific include directories
 target_include_directories(nbody_simulation PRIVATE
     ${X11_INCLUDE_DIR}
     ${XRANDR_INCLUDE_DIRS}
@@ -82,7 +74,6 @@ target_include_directories(nbody_simulation PRIVATE
     ${XI_INCLUDE_DIRS}
 )
 
-# Link libraries
 target_link_libraries(nbody_simulation PRIVATE 
     SFML::Graphics SFML::Window SFML::System
     OpenGL::GL
@@ -102,5 +93,4 @@ if(NOT WIN32)
     target_link_libraries(nbody_simulation PRIVATE pthread)
 endif()
 
-# Install target
 install(TARGETS nbody_simulation DESTINATION bin)

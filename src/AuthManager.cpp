@@ -7,7 +7,6 @@
 using namespace std;
 using namespace pqxx;
 
-// Хеширование паролей (djb2 алгоритм)
 string AuthManager::hashPassword(const string& password) {
     unsigned long hash = 5381;
     for (char c : password) {
@@ -47,7 +46,6 @@ bool AuthManager::connect() {
         if (conn->is_open()) {
             cout << "Connected to database successfully: " << conn->dbname() << endl;
             
-            // Инициализация таблиц
             work txn(*conn);
             txn.exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE");
             
@@ -68,7 +66,6 @@ bool AuthManager::connect() {
                 txn.exec("DELETE FROM users a USING users b WHERE a.id > b.id AND a.username = b.username");
             } catch (...) {}
 
-            // Создание администратора
             string adminHash = hashPassword("admin");
             string query = "INSERT INTO users (username, password_hash, is_admin) VALUES ('admin', '" + adminHash + "', TRUE) ON CONFLICT (username) DO UPDATE SET is_admin = TRUE";
             txn.exec(query);

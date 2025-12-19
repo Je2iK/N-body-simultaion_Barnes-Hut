@@ -16,8 +16,8 @@ private:
     double area_width, area_height;
     bool show_tree;
     atomic<bool> tree_built;
-    double theta;  // Barnes-Hut theta parameter
-    double min_cell_size;  // Minimum cell size for subdivision
+    double theta;  
+    double min_cell_size; 
     
     void resetTree(double x, double y, double w, double h);
     void buildTree(const vector<Star>& stars);
@@ -43,12 +43,11 @@ public:
     void draw(RenderWindow& window, float scale) const override;
     void toggleVisualization() override;
     
-    // Theta control
+
     void increaseTheta() { theta = min(theta + 0.1, 2.0); }
     void decreaseTheta() { theta = max(theta - 0.1, 0.1); }
     double getTheta() const { return theta; }
     
-    // Min cell size control
     void increaseMinCellSize() { min_cell_size = min(min_cell_size + 10.0, 100.0); }
     void decreaseMinCellSize() { min_cell_size = max(min_cell_size - 10.0, 1.0); }
     double getMinCellSize() const { return min_cell_size; }

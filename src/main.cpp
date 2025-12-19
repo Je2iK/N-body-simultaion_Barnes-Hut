@@ -86,7 +86,7 @@ bool runVisualization(ISimulator* simulator, vector<Star> stars, const string& w
         while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>()) {
                 window.close();
-                return true; // Exit application
+                return true;
             }
             
             if (const auto* scroll = event->getIf<Event::MouseWheelScrolled>()) {
@@ -152,7 +152,6 @@ bool runVisualization(ISimulator* simulator, vector<Star> stars, const string& w
                         }
                         break;
                     case Keyboard::Key::R:
-                        // Центрируем камеру на черной дыре (первая звезда)
                         if (!stars.empty()) {
                             view.setCenter({static_cast<float>(stars[0].x * SCALE), 
                                           static_cast<float>(stars[0].y * SCALE)});
@@ -250,7 +249,6 @@ bool runVisualization(ISimulator* simulator, vector<Star> stars, const string& w
             window.draw(marker);
         }
         
-        // UI
         window.setView(window.getDefaultView());
         
         // Верхняя панель
@@ -370,7 +368,6 @@ bool runVisualization(ISimulator* simulator, vector<Star> stars, const string& w
         helpText.setPosition({static_cast<float>(WINDOW_WIDTH) - helpBounds.size.x - 20, 18});
         window.draw(helpText);
         
-        // ИСПРАВЛЕНО: Добавлена проверка границ для предотвращения краша
         if (selectedStarIndex >= 0 && selectedStarIndex < static_cast<int>(stars.size())) {
             const auto& star = stars[selectedStarIndex];
             
@@ -526,7 +523,6 @@ bool runBenchmarkGUI(ISimulator* sim1, int particleCount, ISimulator* sim2 = nul
         text.setString(String::fromUtf8(resultStr.begin(), resultStr.end()));
         window.draw(text);
         
-        // Анимация загрузки
         if (!isDone) {
             spinnerAngle += 5.0f;
             
@@ -592,8 +588,6 @@ int main() {
             }
             
             int particleCount = 1000;
-            // Ask for particle count for all options except Exit (0) and Logout (-1)
-            // Options: 1,2,6 (Sims), 3,4,5 (Benchmarks)
             if (choice >= 1 && choice <= 6) {
                 particleCount = menu.selectParticleCount();
                 if (particleCount == 0) return 0;

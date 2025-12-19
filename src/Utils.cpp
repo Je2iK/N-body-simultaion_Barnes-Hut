@@ -55,14 +55,12 @@ vector<Star> createGalaxyCollision(int num_stars, double galaxy_radius, double a
     const int stars_per_galaxy = (num_stars - 2) / 2;
     const double separation = area_width * 0.4;
     
-    // Центры галактик
     const double galaxy1_x = area_width / 2 - separation / 2;
     const double galaxy1_y = area_height / 2;
     const double galaxy2_x = area_width / 2 + separation / 2;
     const double galaxy2_y = area_height / 2;
     
-    // Скорости сближения (направлены друг к другу)
-    const double collision_speed = 1.5;  // Скорректировано под DT=0.5
+    const double collision_speed = 1.5;
     const double galaxy1_vx = collision_speed;
     const double galaxy1_vy = 0.0;
     const double galaxy2_vx = -collision_speed;
@@ -73,7 +71,6 @@ vector<Star> createGalaxyCollision(int num_stars, double galaxy_radius, double a
     uniform_real_distribution<> pos_dist(0.0, 1.0);
     uniform_real_distribution<> mass_dist(0.5, 1.5);
     
-    // Галактика 1
     stars.emplace_back(galaxy1_x, galaxy1_y, galaxy1_vx, galaxy1_vy, 
                       BLACK_HOLE_MASS, Color::Cyan);
     
@@ -99,7 +96,6 @@ vector<Star> createGalaxyCollision(int num_stars, double galaxy_radius, double a
         stars.emplace_back(x, y, vx, vy, mass, Color(100, 150, 255));
     }
     
-    // Галактика 2
     stars.emplace_back(galaxy2_x, galaxy2_y, galaxy2_vx, galaxy2_vy, 
                       BLACK_HOLE_MASS, Color::Red);
     

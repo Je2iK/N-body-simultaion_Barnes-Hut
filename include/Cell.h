@@ -15,7 +15,7 @@ public:
     double x, y;
     double width, height;
     double mass;
-    double com_x, com_y;  // Center of mass
+    double com_x, com_y;
     
     vector<Star*> stars;
     vector<unique_ptr<Cell>> children;

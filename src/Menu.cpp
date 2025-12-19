@@ -13,12 +13,10 @@
 using namespace std;
 using namespace sf;
 
-// Linear interpolation for smooth animations
 float lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
-// Хелпер для получения русского текста кнопок
 string getButtonText(const string& key) {
     if (key == "BarnesHutSimulation") return u8"Симуляция\nБарнс-Хат";
     if (key == "BruteForceSimulation") return u8"Симуляция\nПеребор";
@@ -31,12 +29,10 @@ string getButtonText(const string& key) {
 }
 
 Menu::Menu(float width, float height) : width(width), height(height), current_username("Guest") {
-    // Load font
     if (!loadFont(font)) {
         cerr << "Failed to load any font!" << endl;
     }
 
-    // Initialize background stars (fewer, more subtle)
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<> x_dist(0, width);
@@ -55,7 +51,6 @@ Menu::Menu(float width, float height) : width(width), height(height), current_us
         });
     }
 
-    // Create modern grid-based menu layout
     float gridStartY = 320.0f;
     float cardWidth = 380.0f;
     float cardHeight = 90.0f;
@@ -63,17 +58,14 @@ Menu::Menu(float width, float height) : width(width), height(height), current_us
     float col1X = width/2 - cardWidth - gap/2;
     float col2X = width/2 + gap/2;
     
-    // Column 1: Simulations
     addButton("BarnesHutSimulation", 1, col1X, gridStartY, cardWidth, cardHeight);
     addButton("BruteForceSimulation", 2, col1X, gridStartY + cardHeight + gap, cardWidth, cardHeight);
     addButton("GalaxyCollision", 6, col1X, gridStartY + (cardHeight + gap) * 2, cardWidth, cardHeight);
     
-    // Column 2: Benchmarks
     addButton("BenchmarkBarnesHut", 3, col2X, gridStartY, cardWidth, cardHeight);
     addButton("BenchmarkBruteForce", 4, col2X, gridStartY + cardHeight + gap, cardWidth, cardHeight);
     addButton("CompareAlgorithms", 5, col2X, gridStartY + (cardHeight + gap) * 2, cardWidth, cardHeight);
 
-    // Exit Button
     float exitBtnWidth = 200.0f;
     float exitBtnHeight = 45.0f;
     addButton("EXIT", 0, width/2 - exitBtnWidth/2, height - 65, exitBtnWidth, exitBtnHeight);
@@ -85,13 +77,11 @@ void Menu::addButton(const string& key, int id, float x, float y, float btnWidth
     btn.id = id;
     btn.locKey = key;
     
-    // Modern card-style button
     btn.shape.setSize(Vector2f(btnWidth, btnHeight));
     btn.shape.setPosition({x, y});
     btn.shape.setFillColor(Color(28, 28, 28, 255));
     btn.shape.setOutlineThickness(0);
     
-    // Text styling
     btn.text.setFont(font);
     btn.text.setString(ru(getButtonText(key)));
     btn.text.setCharacterSize(id == -1 ? 14 : 16);
@@ -145,7 +135,6 @@ int Menu::run() {
     
     bool showProfileMenu = false;
     
-    // Profile modal states
     enum class ProfileState { None, EditUsername, ChangePassword, ConfirmDelete };
     ProfileState profileState = ProfileState::None;
     bool enteringOldPass = false;
@@ -225,7 +214,6 @@ int Menu::run() {
                 return 0;
             }
             
-            // Handle input for profile modals
             if (profileState == ProfileState::EditUsername || profileState == ProfileState::ChangePassword) {
                 profileInput.handleInput(*event);
                 if (profileState == ProfileState::ChangePassword) {
@@ -239,7 +227,6 @@ int Menu::run() {
             if (const auto* mouseBtn = event->getIf<Event::MouseButtonPressed>()) {
                 if (mouseBtn->button == Mouse::Button::Left) {
                     
-                    // If modal is open, handle modal clicks only
                     if (profileState != ProfileState::None) {
                          if (saveProfileBtn.shape.getGlobalBounds().contains(mousePosF)) {
                             #ifdef ENABLE_AUTH
@@ -253,14 +240,11 @@ int Menu::run() {
                                 }
                             } else if (profileState == ProfileState::ChangePassword) {
                                 if (!profileInput.value.empty() && !profileInput2.value.empty()) {
-                                    // Verify old password
                                     if (auth.loginUser(current_username, profileInput.value)) {
-                                        // Set new password
                                         if (auth.changePassword(current_username, profileInput.value, profileInput2.value)) {
                                             success = true;
                                         }
                                     } else {
-                                        // Invalid old password
                                         profileInput.value = "";
                                         profileInput2.value = "";
                                     }
@@ -269,7 +253,7 @@ int Menu::run() {
                                 if (!is_admin) {
                                     if (auth.deleteUser(currentUserId)) {
                                         window.close();
-                                        return -1; // Logout
+                                        return -1; 
                                     }
                                 }
                             }
@@ -287,7 +271,6 @@ int Menu::run() {
                             saveProfileBtn.text.setString(saveStr);
                         }
                         
-                        // Activate input
                         if (profileInput.shape.getGlobalBounds().contains(mousePosF)) {
                             profileInput.isActive = true;
                             profileInput2.isActive = false;
@@ -298,10 +281,8 @@ int Menu::run() {
                             profileInput.isActive = false;
                             profileInput2.isActive = false;
                         }
-                        continue; // Skip other clicks
-                    }
+                        continue;
                     
-                    // Profile button click (top right corner)
                     CircleShape profileBtn(24);
                     profileBtn.setPosition({width - 70, 20});
                     if (profileBtn.getGlobalBounds().contains(mousePosF)) {
@@ -309,13 +290,11 @@ int Menu::run() {
                         continue;
                     }
                     
-                    // Profile menu actions
                     if (showProfileMenu) {
                         float menuX = width - 220;
                         float menuY = 70;
                         float itemHeight = 40;
-                        float currentY = menuY + 65; // Skip header
-                        // Change Username
+                        float currentY = menuY + 65;
                         FloatRect userRect({menuX + 10, currentY}, {180, 35});
                         if (userRect.contains(mousePosF)) {
                             profileState = ProfileState::EditUsername;
@@ -328,7 +307,6 @@ int Menu::run() {
                         }
                         currentY += 40;
                         
-                        // Change Password
                         FloatRect passRect({menuX + 10, currentY}, {180, 35});
                         if (passRect.contains(mousePosF)) {
                             profileState = ProfileState::ChangePassword;
@@ -347,15 +325,13 @@ int Menu::run() {
                         }
                         currentY += 40;
                         
-                        // Logout button
                         FloatRect logoutRect({menuX + 10, currentY}, {180, 35});
                         if (logoutRect.contains(mousePosF)) {
                             window.close();
-                            return -1; // Logout
+                            return -1;
                         }
                         currentY += 40;
                         
-                        // Delete Account button
                         FloatRect deleteRect({menuX + 10, currentY}, {180, 35});
                         if (deleteRect.contains(mousePosF)) {
                             if (!is_admin) {
@@ -366,7 +342,6 @@ int Menu::run() {
                         }
                         currentY += 40;
                         
-                        // Admin Panel button
                         if (is_admin) {
                             FloatRect adminRect({menuX + 10, currentY}, {180, 35});
                             if (adminRect.contains(mousePosF)) {
@@ -381,7 +356,6 @@ int Menu::run() {
 
                     }
                     
-                    // Regular menu buttons
                     for (const auto& btn : buttons) {
                         if (btn.shape.getGlobalBounds().contains(mousePosF)) {
                             window.close();
@@ -389,11 +363,9 @@ int Menu::run() {
                         }
                     }
                     
-                    // Close profile menu if clicked outside
                     if (showProfileMenu) {
-                        RectangleShape profilePanel({200, 150}); // Approximate check
+                        RectangleShape profilePanel({200, 150});
                         profilePanel.setPosition({width - 220, 60});
-                        // Better check:
                         if (mousePosF.x < width - 220 || mousePosF.y > 400) {
                              showProfileMenu = false;
                         }
@@ -402,10 +374,8 @@ int Menu::run() {
             }
         }
         
-        // Animation and logic
         updateBackground();
         
-        // Update localized texts
         Text title(font);
         title.setFont(font);
         title.setString(titleStr);
@@ -453,7 +423,6 @@ int Menu::run() {
         float dt = 0.15f;
 
         for (auto& btn : buttons) {
-            // Update text
             FloatRect tr = btn.text.getLocalBounds();
             Vector2f bp = btn.shape.getPosition();
             Vector2f bs = btn.shape.getSize();
@@ -463,7 +432,7 @@ int Menu::run() {
             bool hovered = btn.shape.getGlobalBounds().contains(Vector2f(static_cast<float>(mousePos.x), 
                                                                static_cast<float>(mousePos.y)));
             
-            if (hovered && profileState == ProfileState::None) { // Added profileState check
+            if (hovered && profileState == ProfileState::None) {
                 btn.targetScale = 1.03f;
                 btn.shape.setFillColor(Color(38, 38, 38));
                 btn.shape.setOutlineColor(Color(30, 215, 96));
@@ -476,35 +445,27 @@ int Menu::run() {
                 btn.text.setFillColor(Color(200, 200, 200));
             }
             
-            // Smooth scale animation
+
             btn.currentScale = lerp(btn.currentScale, btn.targetScale, dt);
         }
 
-        // Rendering - Modern minimal style
         window.clear(Color(18, 18, 18));
         drawBackground(window);
         
-        // Modern title
         window.draw(title);
         
-        // Subtitle - aligned
         window.draw(subtitle);
         
-        // Tagline
         window.draw(tagline);
         
-        // Section labels
         window.draw(simLabel);
         window.draw(benchLabel);
 
-        // Draw buttons with scale
         for (const auto& btn : buttons) {
-            // Save original state
             Vector2f origPos = btn.shape.getPosition();
             Vector2f origTextPos = btn.text.getPosition();
             Vector2f size = btn.shape.getSize();
             
-            // Apply scale transform
             if (btn.currentScale != 1.0f) {
                 Vector2f center = {origPos.x + size.x/2, origPos.y + size.y/2};
                 Transform t;
@@ -521,21 +482,16 @@ int Menu::run() {
         }
 
         
-        // --- PROFILE UI ---
         
-        // Profile button (top right)
         CircleShape profileBtn(20);
         profileBtn.setPosition({width - 60, 20});
         profileBtn.setFillColor(Color(30, 215, 96));
         
-        // Check hover (reuse mousePos from above)
         Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
         if (profileBtn.getGlobalBounds().contains(mousePosF)) {
             profileBtn.setFillColor(Color(40, 255, 120));
         }
         window.draw(profileBtn);
-        
-        // Profile icon (first letter of username)
         Text profileIcon(font);
         profileIcon.setString(current_username.empty() ? "U" : string(1, current_username[0]));
         profileIcon.setCharacterSize(18);
@@ -546,9 +502,7 @@ int Menu::run() {
                                  20 + 20 - iconBounds.size.y/2 - iconBounds.position.y - 2});
         window.draw(profileIcon);
         
-        // Profile dropdown menu
         if (showProfileMenu) {
-            // Dropdown panel
             float panelHeight = is_admin ? 300.0f : 260.0f;
             RectangleShape profilePanel({200, panelHeight});
             profilePanel.setPosition({width - 220, 60});
@@ -557,7 +511,6 @@ int Menu::run() {
             profilePanel.setOutlineThickness(1);
             window.draw(profilePanel);
             
-            // Username label
             Text usernameLabel(font);
             usernameLabel.setString(accountStr);
             usernameLabel.setCharacterSize(10);
@@ -565,7 +518,6 @@ int Menu::run() {
             usernameLabel.setPosition({width - 210, 70});
             window.draw(usernameLabel);
             
-            // Username value
             Text usernameText(font);
             usernameText.setString(current_username);
             usernameText.setCharacterSize(16);
@@ -574,7 +526,6 @@ int Menu::run() {
             usernameText.setPosition({width - 210, 90});
             window.draw(usernameText);
             
-            // Divider
             RectangleShape divider({180, 1});
             divider.setPosition({width - 210, 125});
             divider.setFillColor(Color(60, 60, 60));
@@ -614,7 +565,6 @@ int Menu::run() {
 
         }
         
-        // Modal Overlay
         if (profileState != ProfileState::None) {
             RectangleShape dim({static_cast<float>(width), static_cast<float>(height)});
             dim.setFillColor(Color(0, 0, 0, 180));
@@ -709,10 +659,9 @@ int Menu::selectParticleCount() {
     window.setFramerateLimit(60);
     
     int minParticles = 100;
-    int maxParticles = 500000;  // Увеличено для мощных процессоров
+    int maxParticles = 500000;
     int currentParticles = 1000;
     
-    // Slider dimensions
     float sliderX = 100.0f;
     float sliderY = 200.0f;
     float sliderWidth = 400.0f;
@@ -727,7 +676,6 @@ int Menu::selectParticleCount() {
     sliderHandle.setOrigin({15.0f, 15.0f});
     sliderHandle.setFillColor(Color(30, 215, 96));
     
-    // Calculate initial handle position
     float t = static_cast<float>(currentParticles - minParticles) / (maxParticles - minParticles);
     sliderHandle.setPosition({sliderX + t * sliderWidth, sliderY});
     
@@ -751,31 +699,30 @@ int Menu::selectParticleCount() {
         while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>()) {
                 window.close();
-                return 0; // Default exit
+                return 0; 
             }
             
             if (const auto* mouseBtn = event->getIf<Event::MouseButtonPressed>()) {
                 if (mouseBtn->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
                     
-                    // Check handle click
+                    
                     FloatRect handleBounds = sliderHandle.getGlobalBounds();
-                    // Expand hit area slightly
-                    handleBounds.position.x -= 5; handleBounds.position.y -= 5;
+                                        handleBounds.position.x -= 5; handleBounds.position.y -= 5;
                     handleBounds.size.x += 10; handleBounds.size.y += 10;
                     
                     if (handleBounds.contains(mousePos)) {
                         isDragging = true;
                     }
-                    // Check bar click (jump to position)
+                    
                     else if (sliderBar.getGlobalBounds().contains(mousePos)) {
                         isDragging = true;
-                        // Update immediately
+                        
                         float newX = max(sliderX, min(mousePos.x, sliderX + sliderWidth));
                         sliderHandle.setPosition({newX, sliderY});
                         float ratio = (newX - sliderX) / sliderWidth;
                         currentParticles = minParticles + static_cast<int>(ratio * (maxParticles - minParticles));
-                        // Snap to nearest 100
+                        
                         currentParticles = (currentParticles / 100) * 100;
                     }
                     
@@ -800,16 +747,12 @@ int Menu::selectParticleCount() {
                     
                     float ratio = (newX - sliderX) / sliderWidth;
                     currentParticles = minParticles + static_cast<int>(ratio * (maxParticles - minParticles));
-                    // Snap to nearest 100 for cleaner numbers
                     currentParticles = (currentParticles / 100) * 100;
                 }
             }
         }
         
-        // Rendering
         window.clear(Color(18, 18, 18));
-        
-        // Title
         Text title(font);
         title.setString(titleStr);
         title.setCharacterSize(28);
@@ -819,8 +762,6 @@ int Menu::selectParticleCount() {
         title.setOrigin({titleRect.position.x + titleRect.size.x/2.0f, titleRect.position.y + titleRect.size.y/2.0f});
         title.setPosition({300, 60});
         window.draw(title);
-        
-        // Current Value
         Text valueText(font);
         valueText.setString(to_string(currentParticles));
         valueText.setCharacterSize(48);
@@ -831,11 +772,9 @@ int Menu::selectParticleCount() {
         valueText.setPosition({300, 130});
         window.draw(valueText);
         
-        // Slider
         window.draw(sliderBar);
         window.draw(sliderHandle);
         
-        // Min/Max labels
         Text minText(font);
         minText.setString(to_string(minParticles));
         minText.setCharacterSize(14);
@@ -851,7 +790,6 @@ int Menu::selectParticleCount() {
         maxText.setPosition({sliderX + sliderWidth - maxRect.size.x, sliderY + 20});
         window.draw(maxText);
         
-        // Confirm Button
         window.draw(confirmBtn.shape);
         window.draw(confirmBtn.text);
         
@@ -1012,7 +950,6 @@ bool Menu::showLoginScreen() {
         window.clear(Color(18, 18, 18));
         drawBackground(window);
 
-        // Title
         Text title(font);
         title.setString(titleStr);
         title.setCharacterSize(32);
@@ -1234,7 +1171,6 @@ double Menu::selectTheta() {
     double maxTheta = 2.0;
     double currentTheta = 0.5;
     
-    // Slider dimensions
     float sliderX = 100.0f;
     float sliderY = 200.0f;
     float sliderWidth = 400.0f;
@@ -1249,7 +1185,6 @@ double Menu::selectTheta() {
     sliderHandle.setOrigin({15.0f, 15.0f});
     sliderHandle.setFillColor(Color(30, 215, 96));
     
-    // Calculate initial handle position
     float t = static_cast<float>((currentTheta - minTheta) / (maxTheta - minTheta));
     sliderHandle.setPosition({sliderX + t * sliderWidth, sliderY});
     
@@ -1273,14 +1208,13 @@ double Menu::selectTheta() {
         while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>()) {
                 window.close();
-                return 0.5; // Default exit
+                return 0.5;
             }
             
             if (const auto* mouseBtn = event->getIf<Event::MouseButtonPressed>()) {
                 if (mouseBtn->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
                     
-                    // Check handle click
                     FloatRect handleBounds = sliderHandle.getGlobalBounds();
                     handleBounds.position.x -= 5; handleBounds.position.y -= 5;
                     handleBounds.size.x += 10; handleBounds.size.y += 10;
@@ -1288,14 +1222,12 @@ double Menu::selectTheta() {
                     if (handleBounds.contains(mousePos)) {
                         isDragging = true;
                     }
-                    // Check bar click
                     else if (sliderBar.getGlobalBounds().contains(mousePos)) {
                         isDragging = true;
                         float newX = max(sliderX, min(mousePos.x, sliderX + sliderWidth));
                         sliderHandle.setPosition({newX, sliderY});
                         float ratio = (newX - sliderX) / sliderWidth;
                         currentTheta = minTheta + ratio * (maxTheta - minTheta);
-                        // Round to 0.1
                         currentTheta = round(currentTheta * 10.0) / 10.0;
                     }
                     
@@ -1320,16 +1252,13 @@ double Menu::selectTheta() {
                     
                     float ratio = (newX - sliderX) / sliderWidth;
                     currentTheta = minTheta + ratio * (maxTheta - minTheta);
-                    // Round to 0.1
                     currentTheta = round(currentTheta * 10.0) / 10.0;
                 }
             }
         }
         
-        // Rendering
         window.clear(Color(18, 18, 18));
         
-        // Title
         Text title(font);
         title.setString(titleStr);
         title.setCharacterSize(28);
@@ -1340,7 +1269,6 @@ double Menu::selectTheta() {
         title.setPosition({300, 60});
         window.draw(title);
         
-        // Current Value
         Text valueText(font);
         stringstream ss;
         ss << fixed << setprecision(1) << currentTheta;
@@ -1353,11 +1281,9 @@ double Menu::selectTheta() {
         valueText.setPosition({300, 130});
         window.draw(valueText);
         
-        // Slider
         window.draw(sliderBar);
         window.draw(sliderHandle);
         
-        // Min/Max labels
         Text minText(font);
         ss.str("");
         ss << fixed << setprecision(1) << minTheta;
@@ -1377,7 +1303,6 @@ double Menu::selectTheta() {
         maxText.setPosition({sliderX + sliderWidth - maxRect.size.x, sliderY + 20});
         window.draw(maxText);
         
-        // Confirm Button
         window.draw(confirmBtn.shape);
         window.draw(confirmBtn.text);
         
@@ -1391,7 +1316,6 @@ void Menu::showSettings() {
     RenderWindow window(VideoMode({600, 500}), ru(u8"НАСТРОЙКИ"), Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
     
-    // Load current settings from env or defaults
     string dbHost = getenv("DB_HOST") ? getenv("DB_HOST") : "127.0.0.1";
     string dbPort = getenv("DB_PORT") ? getenv("DB_PORT") : "5432";
     string dbName = getenv("DB_NAME") ? getenv("DB_NAME") : "nbody_db";
@@ -1458,7 +1382,6 @@ void Menu::showSettings() {
                     }
                     
                     if (saveBtn.shape.getGlobalBounds().contains(mousePos)) {
-                        // Save to env vars for current session
                         setenv("DB_HOST", hostBox.value.c_str(), 1);
                         setenv("DB_PORT", portBox.value.c_str(), 1);
                         setenv("DB_NAME", nameBox.value.c_str(), 1);
@@ -1639,7 +1562,7 @@ void Menu::showAdminPanel() {
                             y += 50;
                         }
                     } else {
-                        // Нет модальных окон - все действия удалены
+                        
                     }
                 }
             }
@@ -1744,7 +1667,7 @@ void Menu::showAdminPanel() {
             y += 50;
         }
         
-        if (false) { // Модальные окна отключены - админ панель только для просмотра
+        if (false) {
             RectangleShape dim({900, 700});
             dim.setFillColor(Color(0, 0, 0, 200));
             window.draw(dim);
@@ -1757,7 +1680,7 @@ void Menu::showAdminPanel() {
             modal.setOutlineThickness(2);
             window.draw(modal);
             
-            if (false) { // ViewHash удален
+            if (false) {
                 Text modalTitle(font);
                 String userStr = String::fromUtf8(selectedUsername.begin(), selectedUsername.end());
                 modalTitle.setString(passForStr + userStr);
@@ -1786,7 +1709,7 @@ void Menu::showAdminPanel() {
             } else {
                 Text modalTitle(font);
                 String userStr = String::fromUtf8(selectedUsername.begin(), selectedUsername.end());
-                if (false) modalTitle.setString(editUserStr + userStr); // EditUsername удален
+                if (false) modalTitle.setString(editUserStr + userStr);
                 
                 modalTitle.setCharacterSize(20);
                 modalTitle.setFillColor(Color::White);
@@ -1795,7 +1718,7 @@ void Menu::showAdminPanel() {
                 modalTitle.setPosition({450, 280});
                 window.draw(modalTitle);
                 
-                if (false) { // EditUsername удален
+                if (false) {
                     window.draw(editBox.shape);
                     string displayString = editBox.value;
                     if (editBox.isPassword) {
