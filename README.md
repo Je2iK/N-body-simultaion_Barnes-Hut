@@ -50,9 +50,6 @@ N-body-simultaion_Barnes-Hut/
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 
-## Установка и запуск
-
-### Вариант Docker (рекомендуется)
 
 ```bash
 # Клонирование репозитория
@@ -63,25 +60,11 @@ cd N-body-simultaion_Barnes-Hut
 make up
 ```
 
-```bash
-# Запуск базы данных
-docker compose up -d db
-
-# Запуск симуляции
-./nbody_simulation
-```
 
 ## Команды Makefile
 
 - `make up` - Запуск через Docker
 - `make down` - Остановка контейнеров
-- `make build` - Пересборка Docker образов
-- `make install-deps` - Установка системных зависимостей
-- `make check-libs` - Проверка библиотек
-- `make db-only` - Запуск только базы данных
-- `make clean` - Полная очистка
-- `make logs` - Просмотр логов
-- `make help` - Справка по командам
 
 ## Алгоритмы
 
