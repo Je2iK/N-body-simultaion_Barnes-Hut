@@ -28,30 +28,28 @@ endif()
 # Fetch dependencies
 include(FetchContent)
 
-# Загрузка SFML 3
-FetchContent_Declare(
-    SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG        3.0.0
-)
-set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
-
-# Загрузка libpqxx для аутентификации
-if(ENABLE_AUTH)
+# Проверяем есть ли уже скачанный SFML
+if(EXISTS "${CMAKE_SOURCE_DIR}/_deps/sfml-src")
+    message(STATUS "Используем существующий SFML из _deps")
+    set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
+    set(SFML_SOURCE_DIR "${CMAKE_SOURCE_DIR}/_deps/sfml-src")
+    add_subdirectory(${SFML_SOURCE_DIR} ${CMAKE_BINARY_DIR}/sfml-build)
+else()
+    message(STATUS "SFML не найден, загружаем...")
+    # Загрузка SFML 3
     FetchContent_Declare(
-        libpqxx
-        GIT_REPOSITORY https://github.com/jtv/libpqxx.git
-        GIT_TAG        7.9.0
+        SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG        3.0.0
     )
-    set(SKIP_BUILD_TEST ON CACHE BOOL "" FORCE)
-endif()
-
-FetchContent_MakeAvailable(SFML)
-if(ENABLE_AUTH)
-    FetchContent_MakeAvailable(libpqxx)
+    set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(SFML)
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
