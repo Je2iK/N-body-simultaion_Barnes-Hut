@@ -1,0 +1,24 @@
+----------------------------------------
+Algorithm: Barnes-Hut
+Particles: 180000
+Steps: 100
+Duration: 19230 ms
+Avg time/step: 192.3 ms
+FPS Equivalent: 5.20021
+Threads: 16
+Complexity: O(N log N)
+Date: 2025-12-18 23:14:46
+----------------------------------------
+
+----------------------------------------
+Algorithm: Barnes-Hut
+Particles: 125000
+Steps: 100
+Duration: 11800 ms
+Avg time/step: 118 ms
+FPS Equivalent: 8.47458
+Threads: 16
+Complexity: O(N log N)
+Date: 2025-12-18 23:23:17
+----------------------------------------
+

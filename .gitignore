@@ -1,0 +1,6 @@
+build/
+.vscode/
+*.o
+*.exe
+nbody_simulation
+.env

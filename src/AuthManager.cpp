@@ -2,30 +2,24 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-
 #include <cstdlib>
 
 using namespace std;
 using namespace pqxx;
 
-// Простая хеш-функция (для демонстрации, в реальном проекте используйте SHA256/bcrypt)
-// hash не криптографически стойкая, но сойдет для примера без OpenSSL
+// Хеширование паролей (djb2 алгоритм)
 string AuthManager::hashPassword(const string& password) {
     unsigned long hash = 5381;
     for (char c : password) {
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        hash = ((hash << 5) + hash) + c;
     }
     stringstream ss;
     ss << hex << hash;
     return ss.str();
 }
 
+// Подключение к базе данных
 AuthManager::AuthManager() : connected(false) {
-    // Получаем параметры подключения из переменных окружения.
-    // Пароль передается драйверу (libpqxx) в открытом виде, так как драйвер сам занимается
-    // хешированием при выполнении протокола аутентификации (MD5 или SCRAM-SHA-256).
-    // Хардкодить пароли в коде — плохая практика, поэтому используем переменные окружения.
-    
     const char* env_host = getenv("DB_HOST");
     const char* env_port = getenv("DB_PORT");
 const char* env_name = getenv("DB_NAME");
@@ -53,10 +47,10 @@ bool AuthManager::connect() {
         if (conn->is_open()) {
             cout << "Connected to database successfully: " << conn->dbname() << endl;
             
+            // Инициализация таблиц
             work txn(*conn);
             txn.exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE");
             
-            // Create benchmark_results table
             txn.exec(R"(
                 CREATE TABLE IF NOT EXISTS benchmark_results (
                     id SERIAL PRIMARY KEY,
@@ -70,13 +64,11 @@ bool AuthManager::connect() {
                 )
             )");
 
-            // real_password column removed for security
-            
-            // Remove duplicates if any exist (keep oldest)
             try {
                 txn.exec("DELETE FROM users a USING users b WHERE a.id > b.id AND a.username = b.username");
             } catch (...) {}
 
+            // Создание администратора
             string adminHash = hashPassword("admin");
             string query = "INSERT INTO users (username, password_hash, is_admin) VALUES ('admin', '" + adminHash + "', TRUE) ON CONFLICT (username) DO UPDATE SET is_admin = TRUE";
             txn.exec(query);
@@ -199,19 +191,6 @@ bool AuthManager::setAdminStatus(int id, bool isAdmin) {
     }
 }
 
-string AuthManager::getPasswordHash(int id) {
-    if (!connected || !conn) return "";
-    try {
-        work txn(*conn);
-        string query = "SELECT password_hash FROM users WHERE id = " + to_string(id);
-        result r = txn.exec(query);
-        if (r.empty()) return "";
-        return r[0][0].as<string>();
-    } catch (const exception& e) {
-        return "";
-    }
-}
-
 vector<AuthManager::User> AuthManager::getAllUsers() {
     vector<User> users;
     if (!connected || !conn) return users;
@@ -264,18 +243,23 @@ bool AuthManager::updateUsername(int id, const string& newUsername) {
     }
 }
 
-bool AuthManager::updatePassword(int id, const string& newPassword) {
+bool AuthManager::changePassword(const string& username, const string& oldPassword, const string& newPassword) {
     if (!connected || !conn) return false;
+    
+    // Сначала проверяем старый пароль
+    if (!loginUser(username, oldPassword)) {
+        return false;
+    }
+    
     try {
         string hashedPassword = hashPassword(newPassword);
         work txn(*conn);
         string query = "UPDATE users SET password_hash = " + txn.quote(hashedPassword) + 
-                           " WHERE id = " + to_string(id);
+                           " WHERE username = " + txn.quote(username);
         txn.exec(query);
         txn.commit();
         return true;
     } catch (const exception& e) {
-        cerr << "Update password error: " << e.what() << endl;
         return false;
     }
 }

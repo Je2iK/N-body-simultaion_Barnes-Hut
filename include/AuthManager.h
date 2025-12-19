@@ -28,11 +28,10 @@ public:
     bool deleteUser(const string& username);
     bool deleteUser(int id);
     bool updateUsername(int id, const string& newUsername);
-    bool updatePassword(int id, const string& newPassword);
+    bool changePassword(const string& username, const string& oldPassword, const string& newPassword);
     bool isAdmin(const string& username);
     int getUserId(const string& username);
     bool setAdminStatus(int id, bool isAdmin);
-    string getPasswordHash(int id);
     vector<User> getAllUsers();
     bool isConnected() const;
 

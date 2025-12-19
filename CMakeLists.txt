@@ -4,24 +4,19 @@ project(NBodySimulation)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find system dependencies
+# Системные зависимости
 find_package(PkgConfig REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
 
-# Find X11 libraries
 find_package(X11 REQUIRED)
 if(NOT X11_FOUND)
     message(FATAL_ERROR "X11 libraries not found")
 endif()
 
-# Find additional X11 components
 pkg_check_modules(XRANDR REQUIRED xrandr)
 pkg_check_modules(XCURSOR REQUIRED xcursor)
 pkg_check_modules(XI REQUIRED xi)
-
-# Find udev
-pkg_check_modules(UDEV REQUIRED libudev)
 
 # Optimization flags
 if(MSVC)
@@ -33,7 +28,7 @@ endif()
 # Fetch dependencies
 include(FetchContent)
 
-# Fetch SFML 3
+# Загрузка SFML 3
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -44,7 +39,7 @@ set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
 
-# Fetch libpqxx
+# Загрузка libpqxx для аутентификации
 if(ENABLE_AUTH)
     FetchContent_Declare(
         libpqxx
@@ -59,17 +54,9 @@ if(ENABLE_AUTH)
     FetchContent_MakeAvailable(libpqxx)
 endif()
 
-# Include directories
 include_directories(${PROJECT_SOURCE_DIR}/include)
-target_include_directories(nbody_simulation PRIVATE
-    ${X11_INCLUDE_DIR}
-    ${XRANDR_INCLUDE_DIRS}
-    ${XCURSOR_INCLUDE_DIRS}
-    ${XI_INCLUDE_DIRS}
-    ${UDEV_INCLUDE_DIRS}
-)
 
-# Source files
+# Исходные файлы
 set(SOURCES
     src/main.cpp
     src/Utils.cpp
@@ -87,6 +74,14 @@ endif()
 # Executable
 add_executable(nbody_simulation ${SOURCES})
 
+# Target-specific include directories
+target_include_directories(nbody_simulation PRIVATE
+    ${X11_INCLUDE_DIR}
+    ${XRANDR_INCLUDE_DIRS}
+    ${XCURSOR_INCLUDE_DIRS}
+    ${XI_INCLUDE_DIRS}
+)
+
 # Link libraries
 target_link_libraries(nbody_simulation PRIVATE 
     SFML::Graphics SFML::Window SFML::System
@@ -96,7 +91,6 @@ target_link_libraries(nbody_simulation PRIVATE
     ${XRANDR_LIBRARIES}
     ${XCURSOR_LIBRARIES}
     ${XI_LIBRARIES}
-    ${UDEV_LIBRARIES}
 )
 
 if(ENABLE_AUTH)

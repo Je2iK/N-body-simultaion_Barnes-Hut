@@ -14,6 +14,9 @@
 # EXTERNAL cache entries
 ########################
 
+//Build documentation
+BUILD_DOC:BOOL=OFF
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
 
@@ -21,7 +24,7 @@ CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //Choose the type of build (Debug or Release)
-CMAKE_BUILD_TYPE:STRING=
+CMAKE_BUILD_TYPE:STRING=Release
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -281,8 +284,8 @@ CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
-//Enable authentication (requires libpqxx)
-ENABLE_AUTH:BOOL=ON
+//No help, variable specified on the command line.
+ENABLE_AUTH:UNINITIALIZED=ON
 
 //Directory under which to collect all populated content
 FETCHCONTENT_BASE_DIR:PATH=/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps
@@ -295,11 +298,18 @@ FETCHCONTENT_FULLY_DISCONNECTED:BOOL=OFF
 FETCHCONTENT_QUIET:BOOL=ON
 
 //When not empty, overrides where to find pre-populated content
+// for libpqxx
+FETCHCONTENT_SOURCE_DIR_LIBPQXX:PATH=
+
+//When not empty, overrides where to find pre-populated content
 // for SFML
 FETCHCONTENT_SOURCE_DIR_SFML:PATH=
 
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of libpqxx
+FETCHCONTENT_UPDATES_DISCONNECTED_LIBPQXX:BOOL=OFF
 
 //Enables UPDATE_DISCONNECTED behavior just for population of SFML
 FETCHCONTENT_UPDATES_DISCONNECTED_SFML:BOOL=OFF
@@ -309,9 +319,6 @@ FREETYPE_INCLUDE_DIR_freetype2:PATH=/usr/include/freetype2
 
 //Path to a file.
 FREETYPE_INCLUDE_DIR_ft2build:PATH=/usr/include/freetype2
-
-//Path to a library.
-FREETYPE_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libfreetype.so
 
 //Path to a library.
 FREETYPE_LIBRARY_DEBUG:FILEPATH=FREETYPE_LIBRARY_DEBUG-NOTFOUND
@@ -359,9 +366,6 @@ OPENGL_INCLUDE_DIR:PATH=/usr/include
 OPENGL_egl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libEGL.so
 
 //Path to a library.
-OPENGL_gl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGL.so
-
-//Path to a library.
 OPENGL_gles2_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLESv2.so
 
 //Path to a library.
@@ -384,6 +388,24 @@ PKG_CONFIG_ARGN:STRING=
 
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+
+//The Set the PostgreSQL_INCLUDE_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL include directories. E.g
+// /usr/local/include/PostgreSQL/8.4 or C:/Program Files/PostgreSQL/8.4/include
+PostgreSQL_INCLUDE_DIR:PATH=/usr/include/postgresql
+
+//The Set the PostgreSQL_LIBRARY_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL libraries.
+PostgreSQL_LIBRARY_DEBUG:FILEPATH=PostgreSQL_LIBRARY_DEBUG-NOTFOUND
+
+//The Set the PostgreSQL_LIBRARY_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL libraries.
+PostgreSQL_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libpq.so
+
+//The Set the PostgreSQL_INCLUDE_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL include directories. E.g
+// /usr/local/include/PostgreSQL/8.4 or C:/Program Files/PostgreSQL/8.4/include
+PostgreSQL_TYPE_INCLUDE_DIR:PATH=PostgreSQL_TYPE_INCLUDE_DIR-NOTFOUND
 
 //Value Computed by CMake
 SFML_BINARY_DIR:STATIC=/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/sfml-build
@@ -443,6 +465,8 @@ SFML_USE_SYSTEM_DEPS:BOOL=ON
 
 //Treat compiler warnings as errors
 SFML_WARNINGS_AS_ERRORS:BOOL=OFF
+
+SKIP_BUILD_TEST:BOOL=ON
 
 //Path to a file.
 UDEV_INCLUDE_DIR:PATH=/usr/include
@@ -855,11 +879,29 @@ X11_xkbfile_INCLUDE_PATH:PATH=X11_xkbfile_INCLUDE_PATH-NOTFOUND
 //Path to a library.
 X11_xkbfile_LIB:FILEPATH=X11_xkbfile_LIB-NOTFOUND
 
+//Value Computed by CMake
+libpqxx_BINARY_DIR:STATIC=/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/libpqxx-build
+
+//Value Computed by CMake
+libpqxx_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+libpqxx_SOURCE_DIR:STATIC=/home/osnsab/Документы/N-body-simultaion_Barnes-Hut/build/_deps/libpqxx-src
+
 //Path to a library.
 pkgcfg_lib_PKG_FONTCONFIG_fontconfig:FILEPATH=/usr/lib/x86_64-linux-gnu/libfontconfig.so
 
 //Path to a library.
 pkgcfg_lib_PKG_FONTCONFIG_freetype:FILEPATH=/usr/lib/x86_64-linux-gnu/libfreetype.so
+
+//Path to a library.
+pkgcfg_lib_XCURSOR_Xcursor:FILEPATH=/usr/lib/x86_64-linux-gnu/libXcursor.so
+
+//Path to a library.
+pkgcfg_lib_XI_Xi:FILEPATH=/usr/lib/x86_64-linux-gnu/libXi.so
+
+//Path to a library.
+pkgcfg_lib_XRANDR_Xrandr:FILEPATH=/usr/lib/x86_64-linux-gnu/libXrandr.so
 
 
 ########################
@@ -1012,7 +1054,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1061,6 +1103,10 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 FIND_PACKAGE_MESSAGE_DETAILS_Freetype:INTERNAL=[/usr/lib/x86_64-linux-gnu/libfreetype.so][/usr/include/freetype2][2.13.3][v()]
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libOpenGL.so][/usr/lib/x86_64-linux-gnu/libGLX.so][/usr/include][cfound components: OpenGL ][v()]
+//Details about finding PkgConfig
+FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v1.8.1()]
+//Details about finding PostgreSQL
+FIND_PACKAGE_MESSAGE_DETAILS_PostgreSQL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libpq.so][/usr/include/postgresql][c ][v18.1()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding UDev
@@ -1071,8 +1117,6 @@ FIND_PACKAGE_MESSAGE_DETAILS_X11:INTERNAL=[/usr/include][/usr/lib/x86_64-linux-g
 FREETYPE_INCLUDE_DIR_freetype2-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: FREETYPE_INCLUDE_DIR_ft2build
 FREETYPE_INCLUDE_DIR_ft2build-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FREETYPE_LIBRARY
-FREETYPE_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: FREETYPE_LIBRARY_DEBUG
 FREETYPE_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: FREETYPE_LIBRARY_RELEASE
@@ -1097,8 +1141,6 @@ OPENGL_GLX_INCLUDE_DIR-ADVANCED:INTERNAL=1
 OPENGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_egl_LIBRARY
 OPENGL_egl_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: OPENGL_gl_LIBRARY
-OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gles2_LIBRARY
 OPENGL_gles2_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gles3_LIBRARY
@@ -1150,6 +1192,16 @@ PKG_FONTCONFIG_fontconfig_INCLUDEDIR:INTERNAL=
 PKG_FONTCONFIG_fontconfig_LIBDIR:INTERNAL=
 PKG_FONTCONFIG_fontconfig_PREFIX:INTERNAL=
 PKG_FONTCONFIG_fontconfig_VERSION:INTERNAL=
+//Have function poll
+PQXX_HAVE_POLL:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_INCLUDE_DIR
+PostgreSQL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_LIBRARY_DEBUG
+PostgreSQL_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_LIBRARY_RELEASE
+PostgreSQL_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_TYPE_INCLUDE_DIR
+PostgreSQL_TYPE_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: UDEV_INCLUDE_DIR
 UDEV_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: UDEV_LIBRARIES
@@ -1424,6 +1476,111 @@ X11_xkbcommon_X11_LIB-ADVANCED:INTERNAL=1
 X11_xkbfile_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xkbfile_LIB
 X11_xkbfile_LIB-ADVANCED:INTERNAL=1
+XCURSOR_CFLAGS:INTERNAL=-I/usr/include
+XCURSOR_CFLAGS_I:INTERNAL=
+XCURSOR_CFLAGS_OTHER:INTERNAL=
+XCURSOR_FOUND:INTERNAL=1
+XCURSOR_INCLUDEDIR:INTERNAL=/usr/include
+XCURSOR_INCLUDE_DIRS:INTERNAL=/usr/include
+XCURSOR_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lXcursor
+XCURSOR_LDFLAGS_OTHER:INTERNAL=
+XCURSOR_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+XCURSOR_LIBRARIES:INTERNAL=Xcursor
+XCURSOR_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
+XCURSOR_LIBS:INTERNAL=
+XCURSOR_LIBS_L:INTERNAL=
+XCURSOR_LIBS_OTHER:INTERNAL=
+XCURSOR_LIBS_PATHS:INTERNAL=
+XCURSOR_MODULE_NAME:INTERNAL=xcursor
+XCURSOR_PREFIX:INTERNAL=/usr
+XCURSOR_STATIC_CFLAGS:INTERNAL=-I/usr/include
+XCURSOR_STATIC_CFLAGS_I:INTERNAL=
+XCURSOR_STATIC_CFLAGS_OTHER:INTERNAL=
+XCURSOR_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include
+XCURSOR_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lXcursor;-L/usr/lib/x86_64-linux-gnu;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXrender;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXfixes;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXdmcp
+XCURSOR_STATIC_LDFLAGS_OTHER:INTERNAL=
+XCURSOR_STATIC_LIBDIR:INTERNAL=
+XCURSOR_STATIC_LIBRARIES:INTERNAL=Xcursor;pthread;xcb;Xau;Xrender;X11;pthread;xcb;Xau;X11;pthread;xcb;Xau;Xfixes;X11;pthread;xcb;Xau;Xdmcp
+XCURSOR_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu
+XCURSOR_STATIC_LIBS:INTERNAL=
+XCURSOR_STATIC_LIBS_L:INTERNAL=
+XCURSOR_STATIC_LIBS_OTHER:INTERNAL=
+XCURSOR_STATIC_LIBS_PATHS:INTERNAL=
+XCURSOR_VERSION:INTERNAL=1.2.3
+XCURSOR_xcursor_INCLUDEDIR:INTERNAL=
+XCURSOR_xcursor_LIBDIR:INTERNAL=
+XCURSOR_xcursor_PREFIX:INTERNAL=
+XCURSOR_xcursor_VERSION:INTERNAL=
+XI_CFLAGS:INTERNAL=-I/usr/include
+XI_CFLAGS_I:INTERNAL=
+XI_CFLAGS_OTHER:INTERNAL=
+XI_FOUND:INTERNAL=1
+XI_INCLUDEDIR:INTERNAL=/usr/include
+XI_INCLUDE_DIRS:INTERNAL=/usr/include
+XI_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lXi
+XI_LDFLAGS_OTHER:INTERNAL=
+XI_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+XI_LIBRARIES:INTERNAL=Xi
+XI_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
+XI_LIBS:INTERNAL=
+XI_LIBS_L:INTERNAL=
+XI_LIBS_OTHER:INTERNAL=
+XI_LIBS_PATHS:INTERNAL=
+XI_MODULE_NAME:INTERNAL=xi
+XI_PREFIX:INTERNAL=/usr
+XI_STATIC_CFLAGS:INTERNAL=-I/usr/include
+XI_STATIC_CFLAGS_I:INTERNAL=
+XI_STATIC_CFLAGS_OTHER:INTERNAL=
+XI_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include
+XI_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lXi;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXext;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXfixes;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXdmcp
+XI_STATIC_LDFLAGS_OTHER:INTERNAL=
+XI_STATIC_LIBDIR:INTERNAL=
+XI_STATIC_LIBRARIES:INTERNAL=Xi;X11;pthread;xcb;Xau;Xext;X11;pthread;xcb;Xau;Xfixes;X11;pthread;xcb;Xau;Xdmcp
+XI_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu
+XI_STATIC_LIBS:INTERNAL=
+XI_STATIC_LIBS_L:INTERNAL=
+XI_STATIC_LIBS_OTHER:INTERNAL=
+XI_STATIC_LIBS_PATHS:INTERNAL=
+XI_VERSION:INTERNAL=1.8.2
+XI_xi_INCLUDEDIR:INTERNAL=
+XI_xi_LIBDIR:INTERNAL=
+XI_xi_PREFIX:INTERNAL=
+XI_xi_VERSION:INTERNAL=
+XRANDR_CFLAGS:INTERNAL=-I/usr/include
+XRANDR_CFLAGS_I:INTERNAL=
+XRANDR_CFLAGS_OTHER:INTERNAL=
+XRANDR_FOUND:INTERNAL=1
+XRANDR_INCLUDEDIR:INTERNAL=/usr/include
+XRANDR_INCLUDE_DIRS:INTERNAL=/usr/include
+XRANDR_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lXrandr
+XRANDR_LDFLAGS_OTHER:INTERNAL=
+XRANDR_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+XRANDR_LIBRARIES:INTERNAL=Xrandr
+XRANDR_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
+XRANDR_LIBS:INTERNAL=
+XRANDR_LIBS_L:INTERNAL=
+XRANDR_LIBS_OTHER:INTERNAL=
+XRANDR_LIBS_PATHS:INTERNAL=
+XRANDR_MODULE_NAME:INTERNAL=xrandr
+XRANDR_PREFIX:INTERNAL=/usr
+XRANDR_STATIC_CFLAGS:INTERNAL=-I/usr/include
+XRANDR_STATIC_CFLAGS_I:INTERNAL=
+XRANDR_STATIC_CFLAGS_OTHER:INTERNAL=
+XRANDR_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include
+XRANDR_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lXrandr;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXext;-L/usr/lib/x86_64-linux-gnu;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXrender;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-L/usr/lib/x86_64-linux-gnu;-lX11;-lpthread;-L/usr/lib/x86_64-linux-gnu;-lxcb;-L/usr/lib/x86_64-linux-gnu;-lXau;-lXdmcp
+XRANDR_STATIC_LDFLAGS_OTHER:INTERNAL=
+XRANDR_STATIC_LIBDIR:INTERNAL=
+XRANDR_STATIC_LIBRARIES:INTERNAL=Xrandr;X11;pthread;xcb;Xau;Xext;pthread;xcb;Xau;Xrender;X11;pthread;xcb;Xau;X11;pthread;xcb;Xau;Xdmcp
+XRANDR_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu
+XRANDR_STATIC_LIBS:INTERNAL=
+XRANDR_STATIC_LIBS_L:INTERNAL=
+XRANDR_STATIC_LIBS_OTHER:INTERNAL=
+XRANDR_STATIC_LIBS_PATHS:INTERNAL=
+XRANDR_VERSION:INTERNAL=1.5.4
+XRANDR_xrandr_INCLUDEDIR:INTERNAL=
+XRANDR_xrandr_LIBDIR:INTERNAL=
+XRANDR_xrandr_PREFIX:INTERNAL=
+XRANDR_xrandr_VERSION:INTERNAL=
 //linker supports push/pop state
 _CMAKE_CXX_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
 //linker supports push/pop state
@@ -1433,10 +1590,22 @@ _CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
 __pkg_config_arguments_PKG_FONTCONFIG:INTERNAL=QUIET;fontconfig
+__pkg_config_arguments_XCURSOR:INTERNAL=REQUIRED;xcursor
+__pkg_config_arguments_XI:INTERNAL=REQUIRED;xi
+__pkg_config_arguments_XRANDR:INTERNAL=REQUIRED;xrandr
 __pkg_config_checked_PKG_FONTCONFIG:INTERNAL=1
+__pkg_config_checked_XCURSOR:INTERNAL=1
+__pkg_config_checked_XI:INTERNAL=1
+__pkg_config_checked_XRANDR:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_PKG_FONTCONFIG_fontconfig
 pkgcfg_lib_PKG_FONTCONFIG_fontconfig-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_PKG_FONTCONFIG_freetype
 pkgcfg_lib_PKG_FONTCONFIG_freetype-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_XCURSOR_Xcursor
+pkgcfg_lib_XCURSOR_Xcursor-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_XI_Xi
+pkgcfg_lib_XI_Xi-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_XRANDR_Xrandr
+pkgcfg_lib_XRANDR_Xrandr-ADVANCED:INTERNAL=1
 prefix_result:INTERNAL=/usr/lib/x86_64-linux-gnu
 

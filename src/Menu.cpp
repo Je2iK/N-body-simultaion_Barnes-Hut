@@ -117,12 +117,23 @@ void Menu::updateBackground() {
 }
 
 void Menu::drawBackground(RenderWindow& window) {
-    // Draw subtle stars
-    for (const auto& star : stars) {
-        CircleShape starShape(star.size);
+    // Адаптивная отрисовка для производительности
+    size_t render_count = min(stars.size(), size_t(15000));
+    size_t step = stars.size() / render_count;
+    if (step == 0) step = 1;
+    
+    for (size_t i = 0; i < stars.size(); i += step) {
+        const auto& star = stars[i];
+        float size = (stars.size() > 200000) ? 1.0f : star.size;
+        CircleShape starShape(size);
         starShape.setPosition({star.x, star.y});
-        int b = static_cast<int>(star.brightness);
-        starShape.setFillColor(Color(b, b, b, b/2));
+        
+        if (stars.size() > 200000) {
+            starShape.setFillColor(Color(180, 180, 180, 120));
+        } else {
+            int b = static_cast<int>(star.brightness);
+            starShape.setFillColor(Color(b, b, b, b/2));
+        }
         window.draw(starShape);
     }
 }
@@ -245,7 +256,7 @@ int Menu::run() {
                                     // Verify old password
                                     if (auth.loginUser(current_username, profileInput.value)) {
                                         // Set new password
-                                        if (auth.updatePassword(currentUserId, profileInput2.value)) {
+                                        if (auth.changePassword(current_username, profileInput.value, profileInput2.value)) {
                                             success = true;
                                         }
                                     } else {
@@ -698,7 +709,7 @@ int Menu::selectParticleCount() {
     window.setFramerateLimit(60);
     
     int minParticles = 100;
-    int maxParticles = 50000;
+    int maxParticles = 500000;  // Увеличено для мощных процессоров
     int currentParticles = 1000;
     
     // Slider dimensions
@@ -1495,7 +1506,7 @@ void Menu::showAdminPanel() {
     
     float scrollY = 0;
     
-    enum class State { List, EditUsername, ChangePassword, ViewHash, ConfirmDelete };
+    enum class State { List };
     State currentState = State::List;
     int selectedUserId = -1;
     string selectedUsername = "";
@@ -1624,85 +1635,11 @@ void Menu::showAdminPanel() {
                                     }
                                 }
                                 
-                                float actionX = 700;
-                                FloatRect editRect({actionX, y}, {35, 30});
-                                if (editRect.contains(mousePosF)) {
-                                    currentState = State::EditUsername;
-                                    selectedUserId = user.id;
-                                    selectedUsername = user.username;
-                                    editBox.value = user.username;
-                                    editBox.isActive = true;
-                                    editBox.isPassword = false;
-                                    editBox.text.setString(String::fromUtf8(editBox.value.begin(), editBox.value.end()));
-                                }
-                                
-                                FloatRect passRect({actionX + 45, y}, {35, 30});
-                                if (passRect.contains(mousePosF)) {
-                                    currentState = State::ChangePassword;
-                                    selectedUserId = user.id;
-                                    selectedUsername = user.username;
-                                    editBox.value = "";
-                                    editBox.isActive = true;
-                                    editBox.isPassword = true;
-                                    editBox.text.setString("");
-                                }
-                                
-                                FloatRect hashRect({actionX + 90, y}, {35, 30});
-                                if (hashRect.contains(mousePosF)) {
-                                    currentState = State::ViewHash;
-                                    selectedUserId = user.id;
-                                    selectedUsername = user.username;
-                                    selectedHash = auth.getPasswordHash(user.id);
-                                }
-                                
-                                FloatRect delRect({actionX + 135, y}, {35, 30});
-                                if (delRect.contains(mousePosF)) {
-                                    if (user.username != "admin") {
-                                        currentState = State::ConfirmDelete;
-                                        selectedUserId = user.id;
-                                        selectedUsername = user.username;
-                                    }
-                                }
                             }
                             y += 50;
                         }
                     } else {
-                        if (currentState == State::ViewHash) {
-                            currentState = State::List;
-                        } else {
-                            if (saveBtn.shape.getGlobalBounds().contains(mousePosF)) {
-                                bool refresh = false;
-                                if (currentState == State::EditUsername) {
-                                    if (auth.updateUsername(selectedUserId, editBox.value)) refresh = true;
-                                } else if (currentState == State::ChangePassword) {
-                                    if (auth.updatePassword(selectedUserId, editBox.value)) refresh = true;
-                                } else if (currentState == State::ConfirmDelete) {
-                                    if (auth.deleteUser(selectedUserId)) refresh = true;
-                                }
-                                
-                                if (refresh) {
-                                    allUsers = auth.getAllUsers();
-                                    displayUsers.clear();
-                                    for (const auto& u : allUsers) {
-                                        if (u.username.find(searchBox.value) != string::npos) {
-                                            displayUsers.push_back(u);
-                                        }
-                                    }
-                                }
-                                currentState = State::List;
-                                editBox.isActive = false;
-                            }
-                            if (cancelBtn.shape.getGlobalBounds().contains(mousePosF)) {
-                                currentState = State::List;
-                                editBox.isActive = false;
-                            }
-                            
-                            if (editBox.shape.getGlobalBounds().contains(mousePosF)) {
-                                editBox.isActive = true;
-                            } else {
-                                editBox.isActive = false;
-                            }
-                        }
+                        // Нет модальных окон - все действия удалены
                     }
                 }
             }
@@ -1799,31 +1736,6 @@ void Menu::showAdminPanel() {
                 dateText.setFillColor(Color(150, 150, 150));
                 window.draw(dateText);
                 
-                float actionX = 650;
-                auto drawActionBtn = [&](const string& label, float x, Color color) {
-                    RectangleShape btn({35, 24});
-                    btn.setPosition({x, y + 2});
-                    btn.setFillColor(color);
-                    window.draw(btn);
-                    
-                    Text t(font);
-                    t.setString(label);
-                    t.setCharacterSize(12);
-                    t.setFillColor(Color::White);
-                    FloatRect r = t.getLocalBounds();
-                    t.setOrigin({r.position.x + r.size.x/2, r.position.y + r.size.y/2});
-                    t.setPosition({x + 17.5f, y + 14});
-                    window.draw(t);
-                };
-                
-                drawActionBtn("E", actionX, Color(60, 60, 150));
-                drawActionBtn("P", actionX + 45, Color(150, 150, 60));
-                drawActionBtn("#", actionX + 90, Color(100, 100, 100));
-                
-                if (user.username != "admin") {
-                    drawActionBtn("X", actionX + 135, Color(150, 60, 60));
-                }
-                
                 RectangleShape rowLine({860.0f, 1.0f});
                 rowLine.setPosition({20, y + 40});
                 rowLine.setFillColor(Color(40, 40, 40));
@@ -1832,7 +1744,7 @@ void Menu::showAdminPanel() {
             y += 50;
         }
         
-        if (currentState != State::List) {
+        if (false) { // Модальные окна отключены - админ панель только для просмотра
             RectangleShape dim({900, 700});
             dim.setFillColor(Color(0, 0, 0, 200));
             window.draw(dim);
@@ -1845,7 +1757,7 @@ void Menu::showAdminPanel() {
             modal.setOutlineThickness(2);
             window.draw(modal);
             
-            if (currentState == State::ViewHash) {
+            if (false) { // ViewHash удален
                 Text modalTitle(font);
                 String userStr = String::fromUtf8(selectedUsername.begin(), selectedUsername.end());
                 modalTitle.setString(passForStr + userStr);
@@ -1874,9 +1786,7 @@ void Menu::showAdminPanel() {
             } else {
                 Text modalTitle(font);
                 String userStr = String::fromUtf8(selectedUsername.begin(), selectedUsername.end());
-                if (currentState == State::EditUsername) modalTitle.setString(editUserStr + userStr);
-                else if (currentState == State::ChangePassword) modalTitle.setString(changePassStr + userStr);
-                else if (currentState == State::ConfirmDelete) modalTitle.setString(deleteUserStr + userStr + "?");
+                if (false) modalTitle.setString(editUserStr + userStr); // EditUsername удален
                 
                 modalTitle.setCharacterSize(20);
                 modalTitle.setFillColor(Color::White);
@@ -1885,7 +1795,7 @@ void Menu::showAdminPanel() {
                 modalTitle.setPosition({450, 280});
                 window.draw(modalTitle);
                 
-                if (currentState != State::ConfirmDelete) {
+                if (false) { // EditUsername удален
                     window.draw(editBox.shape);
                     string displayString = editBox.value;
                     if (editBox.isPassword) {

@@ -23,6 +23,7 @@ void BarnesHutSimulator::resetTree(double x, double y, double w, double h) {
     tree_built = false;
 }
 
+// Построение квадродерева для всех звезд
 void BarnesHutSimulator::buildTree(const vector<Star>& stars) {
     if (stars.empty()) return;
 
@@ -107,6 +108,7 @@ int BarnesHutSimulator::getQuadrant(const Star* star, const Cell* cell) const {
     }
 }
 
+// Разделение клетки на 4 квадранта
 void BarnesHutSimulator::subdivide(Cell* cell) {
     if (cell->width < min_cell_size || cell->height < min_cell_size) {
         return;
@@ -173,6 +175,7 @@ void BarnesHutSimulator::insert(const Star* star) {
     }
 }
 
+// Рекурсивное вычисление ускорения от дерева с использованием theta-критерия
 pair<double, double> BarnesHutSimulator::calculateTreeAccelerationRecursive(
     const Star* star, const Cell* cell) const {
     if (cell == nullptr || cell->mass == 0.0) return {0, 0};
@@ -204,6 +207,7 @@ pair<double, double> BarnesHutSimulator::calculateTreeAccelerationRecursive(
     }
 }
 
+// Параллельное вычисление ускорений для всех звезд
 void BarnesHutSimulator::calculateAccelerationsParallel(
     const vector<Star>& stars,
     vector<double>& acc_x,
@@ -239,15 +243,14 @@ void BarnesHutSimulator::calculateAccelerationsParallel(
     }
 }
 
+// Основной шаг симуляции с интегратором Верле
 void BarnesHutSimulator::timeStep(vector<Star>& stars) {
     vector<double> acc_x(stars.size(), 0.0);
     vector<double> acc_y(stars.size(), 0.0);
     
-    // КРИТИЧЕСКИ ВАЖНО: Сначала вычисляем ускорения в текущей позиции!
     buildTree(stars);
     calculateAccelerationsParallel(stars, acc_x, acc_y);
     
-    // Позиции и скорости
     const size_t start_index = 0;
     const size_t num_particles = stars.size();
 
@@ -259,6 +262,7 @@ void BarnesHutSimulator::timeStep(vector<Star>& stars) {
     vector<double> vx_temp(stars.size());
     vector<double> vy_temp(stars.size());
     
+    // Обновление позиций и промежуточных скоростей
     for (int i = 0; i < NUM_THREADS; ++i) {
         const size_t start = start_index + i * chunk_size;
         const size_t end = min(start + chunk_size, stars.size());
@@ -287,6 +291,7 @@ void BarnesHutSimulator::timeStep(vector<Star>& stars) {
     buildTree(stars);
     calculateAccelerationsParallel(stars, acc_x, acc_y);
 
+    // Финальное обновление скоростей
     for (int i = 0; i < NUM_THREADS; ++i) {
         const size_t start = start_index + i * chunk_size;
         const size_t end = min(start + chunk_size, stars.size());

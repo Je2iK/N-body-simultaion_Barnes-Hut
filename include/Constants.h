@@ -21,14 +21,14 @@ namespace Physics {
 
 // Barnes-Hut
 namespace BarnesHut {
-    const double DT = 0.5;  // Оптимальный баланс между скоростью и точностью
+    const double DT = 0.5;  // Возврат к исходному
     const double THETA = 0.5;
     const double MIN_CELL_SIZE = 10.0;
 }
 
 // Brute Force
 namespace BruteForce {
-    const double DT = 0.5;  // Оптимальный баланс между скоростью и точностью
+    const double DT = 0.5;  // Возврат к исходному
 }
 
 // Симуляция
@@ -36,7 +36,7 @@ namespace Simulation {
     const int NUM_STARS_EXCEPT_BH = 500000;
     const int NUM_STARS = NUM_STARS_EXCEPT_BH + 1;
     const int NUM_THREADS = std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
-    const int NUM_STEPS_BENCHMARK = 1000;
+    const int NUM_STEPS_BENCHMARK = 100;  // Уменьшено для быстрого тестирования
 }
 
 // Визуализация
